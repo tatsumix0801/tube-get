@@ -1,0 +1,316 @@
+# つべナビ API リファレンス
+
+このドキュメントでは、つべナビで使用されているAPIエンドポイントについて説明します。
+
+## 認証
+
+すべてのAPIリクエストには認証が必要です。認証はJWTトークンを使用して行われます。
+トークンはログイン時に取得し、すべてのリクエストのヘッダーに含める必要があります。
+
+```
+Authorization: Bearer {token}
+```
+
+## エンドポイント一覧
+
+### YouTube データ関連
+
+#### チャンネル情報取得
+
+```
+GET /api/youtube/channel
+```
+
+指定されたチャンネルURLまたはIDから基本情報を取得します。
+
+**パラメータ**
+
+| 名前 | 型 | 必須 | 説明 |
+|------|-----|------|------|
+| channelUrl | string | いずれか必須 | チャンネルのURL |
+| channelId | string | いずれか必須 | チャンネルID |
+| apiKey | string | 必須 | YouTube Data API Key |
+
+**レスポンス例**
+
+```json
+{
+  "success": true,
+  "channel": {
+    "id": "UC1234567890abcdefgh",
+    "title": "サンプルチャンネル",
+    "description": "チャンネルの説明文...",
+    "customUrl": "@sampleChannel",
+    "publishedAt": "2020-01-01T00:00:00Z",
+    "thumbnails": {
+      "default": { "url": "https://..." },
+      "medium": { "url": "https://..." },
+      "high": { "url": "https://..." }
+    },
+    "subscriberCount": "10000",
+    "videoCount": "120",
+    "viewCount": "1500000",
+    "country": "JP",
+    "banner": "https://...",
+    "keywords": ["サンプル", "テスト"]
+  }
+}
+```
+
+#### 動画一覧取得
+
+```
+GET /api/youtube/videos
+```
+
+指定されたチャンネルの動画一覧を取得します。
+
+**パラメータ**
+
+| 名前 | 型 | 必須 | 説明 |
+|------|-----|------|------|
+| channelUrl | string | いずれか必須 | チャンネルのURL |
+| channelId | string | いずれか必須 | チャンネルID |
+| apiKey | string | 必須 | YouTube Data API Key |
+| maxResults | number | 任意 | 取得する動画の最大数（デフォルト: 50） |
+| pageToken | string | 任意 | 次のページを取得するためのトークン |
+
+**レスポンス例**
+
+```json
+{
+  "success": true,
+  "videos": [
+    {
+      "id": "video123",
+      "title": "サンプル動画タイトル",
+      "publishedAt": "2021-01-01T00:00:00Z",
+      "thumbnail": "https://...",
+      "duration": "PT10M30S",
+      "viewCount": "5000",
+      "likeCount": "500",
+      "commentCount": "100",
+      "spreadRate": 10.5,
+      "url": "https://youtube.com/watch?v=video123",
+      "tags": ["サンプル", "テスト"],
+      "topics": ["エンターテイメント"]
+    }
+    // ...
+  ],
+  "nextPageToken": "ABC123"
+}
+```
+
+#### チャンネル画像取得
+
+```
+GET /api/youtube/channel/images
+```
+
+チャンネルのアイコンとバナー画像情報を取得します。
+
+**パラメータ**
+
+| 名前 | 型 | 必須 | 説明 |
+|------|-----|------|------|
+| channelId | string | 必須 | チャンネルID |
+| apiKey | string | 必須 | YouTube Data API Key |
+| type | string | 任意 | 取得する画像タイプ（"icon"、"banner"、"all"） |
+
+**レスポンス例**
+
+```json
+{
+  "success": true,
+  "images": {
+    "icon": {
+      "url": "https://...",
+      "filename": "channel_icon.jpg"
+    },
+    "banner": {
+      "url": "https://...",
+      "filename": "channel_banner.jpg"
+    }
+  }
+}
+```
+
+#### 動画タグ取得
+
+```
+GET /api/youtube/video/tags
+```
+
+指定された動画のタグ情報を取得します。
+
+**パラメータ**
+
+| 名前 | 型 | 必須 | 説明 |
+|------|-----|------|------|
+| videoId | string | 必須 | 動画ID |
+| apiKey | string | 必須 | YouTube Data API Key |
+
+**レスポンス例**
+
+```json
+{
+  "success": true,
+  "videoId": "video123",
+  "tags": ["サンプル", "テスト", "チュートリアル"]
+}
+```
+
+### ユーザー関連
+
+#### ユーザー登録
+
+```
+POST /api/user/register
+```
+
+新規ユーザーを登録します。
+
+**リクエストボディ**
+
+```json
+{
+  "name": "ユーザー名",
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**レスポンス例**
+
+```json
+{
+  "success": true,
+  "user": {
+    "id": "user123",
+    "name": "ユーザー名",
+    "email": "user@example.com",
+    "createdAt": "2023-01-01T00:00:00Z"
+  },
+  "token": "JWT_TOKEN"
+}
+```
+
+#### ログイン
+
+```
+POST /api/user/login
+```
+
+ユーザー認証を行い、JWTトークンを取得します。
+
+**リクエストボディ**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**レスポンス例**
+
+```json
+{
+  "success": true,
+  "user": {
+    "id": "user123",
+    "name": "ユーザー名",
+    "email": "user@example.com"
+  },
+  "token": "JWT_TOKEN"
+}
+```
+
+### レポート関連
+
+#### レポート生成
+
+```
+POST /api/reports/generate
+```
+
+チャンネルや動画データのレポートを生成します。
+
+**リクエストボディ**
+
+```json
+{
+  "channelId": "UC1234567890abcdefgh",
+  "reportType": "channel",
+  "format": "pdf",
+  "dateRange": {
+    "startDate": "2023-01-01",
+    "endDate": "2023-01-31"
+  },
+  "includeVideos": true
+}
+```
+
+**レスポンス例**
+
+```json
+{
+  "success": true,
+  "reportUrl": "https://...",
+  "expiresAt": "2023-02-01T00:00:00Z"
+}
+```
+
+## エラーレスポンス
+
+エラーが発生した場合は、以下の形式でレスポンスが返されます。
+
+```json
+{
+  "success": false,
+  "message": "エラーメッセージ",
+  "code": "ERROR_CODE"
+}
+```
+
+### 主なエラーコード
+
+| コード | 説明 |
+|------|------|
+| INVALID_CREDENTIALS | 認証情報が無効です |
+| API_KEY_INVALID | YouTube API Keyが無効です |
+| CHANNEL_NOT_FOUND | チャンネルが見つかりません |
+| VIDEO_NOT_FOUND | 動画が見つかりません |
+| QUOTA_EXCEEDED | YouTube API割り当て量を超えました |
+| INVALID_REQUEST | リクエストパラメータが不正です |
+| SERVER_ERROR | サーバー内部エラーが発生しました |
+
+## レート制限
+
+APIリクエストには以下のレート制限が適用されます。
+
+| プラン | 1分あたりのリクエスト数 | 1日あたりのリクエスト数 |
+|------|------|------|
+| 無料プラン | 10 | 100 |
+| スタンダードプラン | 60 | 1,000 |
+| サポートプラン | 120 | 無制限 |
+
+レート制限を超えた場合は、`429 Too Many Requests`ステータスコードと共に以下のレスポンスが返されます。
+
+```json
+{
+  "success": false,
+  "message": "レート制限を超えました",
+  "code": "RATE_LIMIT_EXCEEDED",
+  "retryAfter": 60
+}
+```
+
+## バージョニング
+
+APIはバージョン管理されています。現在のバージョンは`v1`です。
+将来的に互換性のない変更が行われる場合は、新しいバージョンとして提供されます。
+
+```
+/api/v1/...
+``` 

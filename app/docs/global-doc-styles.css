@@ -1,0 +1,245 @@
+/* ドキュメントページの共通スタイル */
+.terms-of-trade-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.terms-content h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #8b5cf6;
+  padding-bottom: 0.5rem;
+}
+
+.terms-content h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #4b5563;
+  border-left: 4px solid #8b5cf6;
+  padding-left: 0.75rem;
+}
+
+.terms-content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #4b5563;
+}
+
+.terms-content p {
+  margin-bottom: 1.25rem;
+}
+
+/* 特別テーブルスタイル - 特商法ページ専用 */
+.terms-content .special-table {
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.terms-content .special-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  box-shadow: none;
+  font-size: 0.95rem;
+}
+
+.terms-content .special-table th,
+.terms-content .special-table td {
+  padding: 0.75rem 1rem;
+  line-height: 1.5;
+  border: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.terms-content .special-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  width: 30%;
+}
+
+.terms-content .special-table td {
+  width: 70%;
+}
+
+.terms-content .special-table tr:hover {
+  background-color: #f9fafb;
+}
+
+/* 通常テーブルスタイル */
+.terms-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.terms-content th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.terms-content td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.terms-content tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.terms-content tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* リストスタイル */
+.terms-content ul,
+.terms-content ol {
+  margin: 1.25rem 0;
+  padding-left: 1.5rem;
+}
+
+.terms-content li {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.terms-content ul li::before {
+  content: "•";
+  color: #8b5cf6;
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}
+
+/* リンクスタイル */
+.terms-content a {
+  color: #8b5cf6;
+  text-decoration: none;
+  border-bottom: 1px dotted #8b5cf6;
+}
+
+.terms-content a:hover {
+  border-bottom: 1px solid #8b5cf6;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .terms-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .terms-content .special-table {
+    overflow-x: auto;
+  }
+  
+  .terms-content .special-table table {
+    width: 100%;
+    display: table;
+    min-width: 650px;
+  }
+
+  .terms-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .terms-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .terms-content h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .terms-content h1 {
+    color: #e5e7eb;
+    border-bottom-color: #a78bfa;
+  }
+
+  .terms-content h2 {
+    color: #d1d5db;
+    border-left-color: #a78bfa;
+  }
+
+  .terms-content h3 {
+    color: #d1d5db;
+  }
+
+  .terms-content .special-table {
+    background: #1f2937;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .terms-content .special-table th {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .terms-content .special-table td {
+    border-color: #4b5563;
+    color: #d1d5db;
+  }
+
+  .terms-content .special-table tr:hover {
+    background-color: #262f3f;
+  }
+
+  .terms-content table {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .terms-content th {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .terms-content td {
+    border-color: #4b5563;
+  }
+
+  .terms-content tr:nth-child(even) {
+    background-color: #1f2937;
+  }
+
+  .terms-content tr:hover {
+    background-color: #374151;
+  }
+
+  .terms-content a {
+    color: #a78bfa;
+    border-bottom-color: #a78bfa;
+  }
+
+  .terms-content a:hover {
+    border-bottom-color: #a78bfa;
+  }
+
+  .terms-content ul li::before {
+    color: #a78bfa;
+  }
+} 

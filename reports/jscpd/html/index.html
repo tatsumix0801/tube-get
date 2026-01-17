@@ -1,0 +1,726 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Copy/Paste Detector Report</title><link href="styles/tailwind.css" rel="stylesheet"><link href="styles/prism.css" rel="stylesheet"></head><body class="bg-gray-100"><header class="bg-white shadow py-4"><div class="container mx-auto px-4"><h1 class="text-3xl font-semibold text-gray-800">jscpd - copy/paste report</h1></div></header><main class="container mx-auto my-8 p-4 bg-white shadow rounded"><section class="mb-8" id="dashboard"><h2 class="text-2xl font-semibold text-gray-700 mb-4">Dashboard</h2><div class="grid grid-cols-4 gap-4"><div class="bg-blue-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-blue-800 mb-2">Total Files</h3><span class="text-4xl font-bold text-blue-800">200</span></div><div class="bg-green-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-green-800 mb-2">Total Lines of Code</h3><span class="text-4xl font-bold text-green-800">19236</span></div><div class="bg-yellow-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-yellow-800 mb-2">Number of Clones</h3><span class="text-4xl font-bold text-yellow-800">15</span></div><div class="bg-red-200 p-4 rounded text-center"><h3 class="text-lg font-semibold text-red-800 mb-2">Duplicated Lines</h3><span class="text-4xl font-bold text-red-800">717 (3.73%)</span></div></div></section><section class="mb-8" id="formats"><h2 class="text-2xl font-semibold text-gray-700 mb-4">Formats with Duplications</h2><table class="w-full table-auto"><thead><tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal"><th class="py-3 px-6 text-left">Format</th><th class="py-3 px-6 text-left">Files</th><th class="py-3 px-6 text-left">Lines</th><th class="py-3 px-6 text-left">Clones</th><th class="py-3 px-6 text-left">Duplicated Lines</th><th class="py-3 px-6 text-left">Duplicated Tokens</th></tr></thead><tbody><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#typescript-clones">typescript</a></td><td class="py-3 px-6">24</td><td class="py-3 px-6">2506</td><td class="py-3 px-6">2</td><td class="py-3 px-6">22</td><td class="py-3 px-6">231</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#javascript-clones">javascript</a></td><td class="py-3 px-6">81</td><td class="py-3 px-6">5489</td><td class="py-3 px-6">4</td><td class="py-3 px-6">337</td><td class="py-3 px-6">2806</td></tr><tr class="bg-white border-b border-gray-200 text-gray-800 text-sm"><td class="py-3 px-6"><a class="text-blue-600 hover:underline" href="#tsx-clones">tsx</a></td><td class="py-3 px-6">95</td><td class="py-3 px-6">11241</td><td class="py-3 px-6">9</td><td class="py-3 px-6">358</td><td class="py-3 px-6">2984</td></tr></tbody></table></section><section class="mb-8" id="txt-clones"><a name="typescript-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">typescript</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">app\api\youtube\channel\route.ts (Line 10:5 - Line 18:42), app\api\youtube\videos\route.ts (Line 12:5 - Line 20:14)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn0" onclick="toggleCodeBlock('cloneGroup0', 'expandBtn0', 'collapseBtn0')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn0" onclick="toggleCodeBlock('cloneGroup0', 'expandBtn0', 'collapseBtn0')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup0"><code class="language-typescript text-sm text-gray-800">if (!apiKey) {
+      return NextResponse.json({ success: false, message: &quot;YouTube API Keyが必要です&quot; }, { status: 400 })
+    }
+
+    if (!channelUrl) {
+      return NextResponse.json({ success: false, message: &quot;チャンネルURLが必要です&quot; }, { status: 400 })
+    }
+
+    // この時点でapiKeyとchannelUrlはstring型であることが確定</code></pre></div><div class="py-4"><p class="text-gray-600">lib\youtube-api.ts (Line 145:11 - Line 159:5), lib\youtube-api.ts (Line 125:9 - Line 140:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn6" onclick="toggleCodeBlock('cloneGroup6', 'expandBtn6', 'collapseBtn6')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn6" onclick="toggleCodeBlock('cloneGroup6', 'expandBtn6', 'collapseBtn6')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup6"><code class="language-typescript text-sm text-gray-800">}&amp;key=${apiKey}`)
+        
+        if (!response.ok) {
+          const error = await response.json()
+          return {
+            success: false,
+            message: translateApiError(error),
+          }
+        }
+        
+        const data = await response.json()
+        if (data.items &amp;&amp; data.items.length &gt; 0) {
+          channelId = data.items[0].id
+          return { success: true, channelId }
+        } else</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="javascript-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">javascript</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">components\ui\context-menu.tsx (Line 67:7 - Line 147:52), components\ui\menubar.tsx (Line 102:9 - Line 182:36)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn4" onclick="toggleCodeBlock('cloneGroup4', 'expandBtn4', 'collapseBtn4')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn4" onclick="toggleCodeBlock('cloneGroup4', 'expandBtn4', 'collapseBtn4')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup4"><code class="language-javascript text-sm text-gray-800">)}
+      {...props}
+    /&gt;
+  &lt;/ContextMenuPrimitive.Portal&gt;
+))
+ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName
+
+const ContextMenuItem = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.Item&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.Item&gt; &amp; {
+    inset?: boolean
+  }
+&gt;(({ className, inset, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.Item
+    ref={ref}
+    className={cn(
+      &quot;relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50&quot;,
+      inset &amp;&amp; &quot;pl-8&quot;,
+      className
+    )}
+    {...props}
+  /&gt;
+))
+ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName
+
+const ContextMenuCheckboxItem = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.CheckboxItem&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.CheckboxItem&gt;
+&gt;(({ className, children, checked, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.CheckboxItem
+    ref={ref}
+    className={cn(
+      &quot;relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50&quot;,
+      className
+    )}
+    checked={checked}
+    {...props}
+  &gt;
+    &lt;span className=&quot;absolute left-2 flex h-3.5 w-3.5 items-center justify-center&quot;&gt;
+      &lt;ContextMenuPrimitive.ItemIndicator&gt;
+        &lt;Check className=&quot;h-4 w-4&quot; /&gt;
+      &lt;/ContextMenuPrimitive.ItemIndicator&gt;
+    &lt;/span&gt;
+    {children}
+  &lt;/ContextMenuPrimitive.CheckboxItem&gt;
+))
+ContextMenuCheckboxItem.displayName =
+  ContextMenuPrimitive.CheckboxItem.displayName
+
+const ContextMenuRadioItem = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.RadioItem&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.RadioItem&gt;
+&gt;(({ className, children, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.RadioItem
+    ref={ref}
+    className={cn(
+      &quot;relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50&quot;,
+      className
+    )}
+    {...props}
+  &gt;
+    &lt;span className=&quot;absolute left-2 flex h-3.5 w-3.5 items-center justify-center&quot;&gt;
+      &lt;ContextMenuPrimitive.ItemIndicator&gt;
+        &lt;Circle className=&quot;h-2 w-2 fill-current&quot; /&gt;
+      &lt;/ContextMenuPrimitive.ItemIndicator&gt;
+    &lt;/span&gt;
+    {children}
+  &lt;/ContextMenuPrimitive.RadioItem&gt;
+))
+ContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName
+
+const ContextMenuLabel = React.forwardRef&lt;
+  React.ElementRef&lt;typeof ContextMenuPrimitive.Label&gt;,
+  React.ComponentPropsWithoutRef&lt;typeof ContextMenuPrimitive.Label&gt; &amp; {
+    inset?: boolean
+  }
+&gt;(({ className, inset, ...props }, ref) =&gt; (
+  &lt;ContextMenuPrimitive.Label
+    ref={ref}
+    className={cn(
+      &quot;px-2 py-1.5 text-sm font-semibold text-foreground&quot;</code></pre></div><div class="py-4"><p class="text-gray-600">components\channel-details\DetailsDescription.tsx (Line 105:8 - Line 126:3), components\channel-details\DetailsTagCloud.tsx (Line 86:8 - Line 99:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn5" onclick="toggleCodeBlock('cloneGroup5', 'expandBtn5', 'collapseBtn5')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn5" onclick="toggleCodeBlock('cloneGroup5', 'expandBtn5', 'collapseBtn5')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup5"><code class="language-javascript text-sm text-gray-800">={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    &gt;
+      &lt;Card className={cn(&quot;border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all duration-300&quot;, className)}&gt;
+        &lt;CardHeader className=&quot;pb-2&quot;&gt;
+          &lt;CardTitle className=&quot;text-base font-medium flex items-center gap-2&quot;&gt;
+            &lt;FileText className=&quot;h-4 w-4 text-purple-500&quot; /&gt;
+            チャンネル説明
+          &lt;/CardTitle&gt;
+        &lt;/CardHeader&gt;
+        &lt;CardContent className=&quot;space-y-4&quot;&gt;
+          {!isLoaded ? (
+            &lt;div className=&quot;rounded-md p-3 bg-gray-50 dark:bg-gray-900/50 animate-pulse h-[150px]&quot;&gt;
+              &lt;div className=&quot;h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2&quot;&gt;&lt;/div&gt;
+              &lt;div className=&quot;h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2&quot;&gt;&lt;/div&gt;
+              &lt;div className=&quot;h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6 mb-2&quot;&gt;&lt;/div&gt;
+              &lt;div className=&quot;h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2&quot;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+          ) : (
+            &lt;div className=&quot;relative&quot;&gt;
+              &lt;div className={cn</code></pre></div><div class="py-4"><p class="text-gray-600">components\ApiErrorHandler.tsx (Line 149:8 - Line 235:8), components\ApiErrorHandler.tsx (Line 89:8 - Line 184:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn10" onclick="toggleCodeBlock('cloneGroup10', 'expandBtn10', 'collapseBtn10')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn10" onclick="toggleCodeBlock('cloneGroup10', 'expandBtn10', 'collapseBtn10')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup10"><code class="language-javascript text-sm text-gray-800">={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;div className=&quot;rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-900 p-3 text-sm text-amber-800 dark:text-amber-300&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+          &lt;Info className=&quot;h-5 w-5 shrink-0 mt-0.5 text-amber-500 dark:text-amber-400&quot; /&gt;
+          &lt;div className=&quot;space-y-1.5&quot;&gt;
+            &lt;p className=&quot;font-medium&quot;&gt;{errorMessage}&lt;/p&gt;
+            &lt;p className=&quot;text-xs opacity-90&quot;&gt;{getErrorGuidance(errorMessage)}&lt;/p&gt;
+            
+            {onRetry &amp;&amp; (
+              &lt;Button 
+                variant=&quot;outline&quot;
+                size=&quot;sm&quot; 
+                onClick={onRetry}
+                className=&quot;mt-1.5 h-8 px-2 text-xs border-amber-300 bg-amber-50/50 hover:bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:bg-amber-900/30&quot;
+              &gt;
+                &lt;RefreshCw className=&quot;h-3 w-3 mr-1&quot; /&gt;
+                再試行
+              &lt;/Button&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * 一般的なAPIエラー表示コンポーネント
+ */
+function GeneralApiError({ errorMessage, onRetry }: { errorMessage: string; onRetry?: () =&gt; void }) {
+  return (
+    &lt;motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;div className=&quot;rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+          &lt;AlertCircle className=&quot;h-5 w-5 shrink-0 mt-0.5&quot; /&gt;
+          &lt;div className=&quot;space-y-1.5&quot;&gt;
+            &lt;p className=&quot;font-medium&quot;&gt;{errorMessage}&lt;/p&gt;
+            &lt;p className=&quot;text-xs opacity-90&quot;&gt;{getErrorGuidance(errorMessage)}&lt;/p&gt;
+            
+            {onRetry &amp;&amp; (
+              &lt;Button 
+                variant=&quot;outline&quot;
+                size=&quot;sm&quot; 
+                onClick={onRetry}
+                className=&quot;mt-1.5 h-8 px-2 text-xs bg-background hover:bg-background/80&quot;
+              &gt;
+                &lt;RefreshCw className=&quot;h-3 w-3 mr-1&quot; /&gt;
+                再試行
+              &lt;/Button&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * API エラーハンドラーコンポーネント
+ * エラーメッセージの内容を解析し、適切なエラー表示を行います
+ */
+export function ApiErrorHandler({ errorMessage, onRetry, className }: ApiErrorHandlerProps) {
+  const [errorType, setErrorType] = useState&lt;'quota' | 'auth' | 'network' | 'validation' | 'general'&gt;('general');
+  
+  // エラーメッセージからエラータイプを判別
+  useEffect(() =&gt; {
+    if (errorMessage) {
+      setErrorType(getErrorType(errorMessage));
+    }
+  }, [errorMessage]);
+  
+  // エラーがない場合は何も表示しない
+  if (!errorMessage) {
+    return null;
+  }
+  
+  // エラータイプに応じたコンポーネントを表示
+  switch (errorType) {
+    case 'quota':
+      return &lt;QuotaExceededError onRetry={onRetry</code></pre></div><div class="py-4"><p class="text-gray-600">components\api-error-handler.tsx (Line 89:8 - Line 239:2), components\ApiErrorHandler.tsx (Line 89:8 - Line 239:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn12" onclick="toggleCodeBlock('cloneGroup12', 'expandBtn12', 'collapseBtn12')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn12" onclick="toggleCodeBlock('cloneGroup12', 'expandBtn12', 'collapseBtn12')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup12"><code class="language-javascript text-sm text-gray-800">={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;Card className=&quot;border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900&quot;&gt;
+        &lt;CardHeader className=&quot;pb-2&quot;&gt;
+          &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+            &lt;AlertCircle className=&quot;h-5 w-5 text-red-500&quot; /&gt;
+            &lt;CardTitle className=&quot;text-red-700 dark:text-red-400&quot;&gt;YouTube API クォータ超過&lt;/CardTitle&gt;
+          &lt;/div&gt;
+          &lt;CardDescription className=&quot;text-red-500 dark:text-red-400 mt-1&quot;&gt;
+            YouTube Data API の 1日の利用制限を超えました
+          &lt;/CardDescription&gt;
+        &lt;/CardHeader&gt;
+        &lt;CardContent className=&quot;space-y-4&quot;&gt;
+          &lt;p className=&quot;text-sm text-red-700 dark:text-red-300&quot;&gt;
+            YouTube API の1日あたりのリクエスト制限（クォータ）を超過しました。
+            この制限は毎日太平洋標準時（PST）の午前0時にリセットされます。
+          &lt;/p&gt;
+          
+          &lt;Alert className=&quot;bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900&quot;&gt;
+            &lt;Info className=&quot;h-4 w-4 text-amber-600 dark:text-amber-400&quot; /&gt;
+            &lt;AlertTitle className=&quot;text-amber-800 dark:text-amber-300 text-sm font-medium&quot;&gt;対処方法&lt;/AlertTitle&gt;
+            &lt;AlertDescription className=&quot;text-amber-700 dark:text-amber-400 text-xs mt-1&quot;&gt;
+              &lt;ul className=&quot;list-disc pl-4 space-y-1&quot;&gt;
+                &lt;li&gt;明日以降に再度お試しください&lt;/li&gt;
+                &lt;li&gt;別のAPIキーを使用する&lt;/li&gt;
+                &lt;li&gt;同じAPIキーでのリクエスト数を減らす&lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/AlertDescription&gt;
+          &lt;/Alert&gt;
+        &lt;/CardContent&gt;
+        &lt;CardFooter className=&quot;flex justify-between&quot;&gt;
+          &lt;div className=&quot;flex items-center text-xs text-gray-500 dark:text-gray-400&quot;&gt;
+            &lt;Clock className=&quot;h-3 w-3 mr-1&quot; /&gt;
+            &lt;span&gt;明日にリセットされます&lt;/span&gt;
+          &lt;/div&gt;
+          {onRetry &amp;&amp; (
+            &lt;Button
+              size=&quot;sm&quot;
+              variant=&quot;outline&quot;
+              onClick={onRetry}
+              className=&quot;gap-1&quot;
+            &gt;
+              &lt;RefreshCw className=&quot;h-3 w-3&quot; /&gt;
+              再試行
+            &lt;/Button&gt;
+          )}
+        &lt;/CardFooter&gt;
+      &lt;/Card&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * 入力バリデーションエラー専用のコンポーネント
+ */
+function ValidationError({ errorMessage, onRetry }: { errorMessage: string; onRetry?: () =&gt; void }) {
+  return (
+    &lt;motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;div className=&quot;rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-900 p-3 text-sm text-amber-800 dark:text-amber-300&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+          &lt;Info className=&quot;h-5 w-5 shrink-0 mt-0.5 text-amber-500 dark:text-amber-400&quot; /&gt;
+          &lt;div className=&quot;space-y-1.5&quot;&gt;
+            &lt;p className=&quot;font-medium&quot;&gt;{errorMessage}&lt;/p&gt;
+            &lt;p className=&quot;text-xs opacity-90&quot;&gt;{getErrorGuidance(errorMessage)}&lt;/p&gt;
+            
+            {onRetry &amp;&amp; (
+              &lt;Button 
+                variant=&quot;outline&quot;
+                size=&quot;sm&quot; 
+                onClick={onRetry}
+                className=&quot;mt-1.5 h-8 px-2 text-xs border-amber-300 bg-amber-50/50 hover:bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:bg-amber-900/30&quot;
+              &gt;
+                &lt;RefreshCw className=&quot;h-3 w-3 mr-1&quot; /&gt;
+                再試行
+              &lt;/Button&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * 一般的なAPIエラー表示コンポーネント
+ */
+function GeneralApiError({ errorMessage, onRetry }: { errorMessage: string; onRetry?: () =&gt; void }) {
+  return (
+    &lt;motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;div className=&quot;rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+          &lt;AlertCircle className=&quot;h-5 w-5 shrink-0 mt-0.5&quot; /&gt;
+          &lt;div className=&quot;space-y-1.5&quot;&gt;
+            &lt;p className=&quot;font-medium&quot;&gt;{errorMessage}&lt;/p&gt;
+            &lt;p className=&quot;text-xs opacity-90&quot;&gt;{getErrorGuidance(errorMessage)}&lt;/p&gt;
+            
+            {onRetry &amp;&amp; (
+              &lt;Button 
+                variant=&quot;outline&quot;
+                size=&quot;sm&quot; 
+                onClick={onRetry}
+                className=&quot;mt-1.5 h-8 px-2 text-xs bg-background hover:bg-background/80&quot;
+              &gt;
+                &lt;RefreshCw className=&quot;h-3 w-3 mr-1&quot; /&gt;
+                再試行
+              &lt;/Button&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * API エラーハンドラーコンポーネント
+ * エラーメッセージの内容を解析し、適切なエラー表示を行います
+ */
+export function ApiErrorHandler({ errorMessage, onRetry, className }: ApiErrorHandlerProps) {
+  const [errorType, setErrorType] = useState&lt;'quota' | 'auth' | 'network' | 'validation' | 'general'&gt;('general');
+  
+  // エラーメッセージからエラータイプを判別
+  useEffect(() =&gt; {
+    if (errorMessage) {
+      setErrorType(getErrorType(errorMessage));
+    }
+  }, [errorMessage]);
+  
+  // エラーがない場合は何も表示しない
+  if (!errorMessage) {
+    return null;
+  }
+  
+  // エラータイプに応じたコンポーネントを表示
+  switch (errorType) {
+    case 'quota':
+      return &lt;QuotaExceededError onRetry={onRetry} /&gt;;
+    case 'validation':
+      return &lt;ValidationError errorMessage={errorMessage} onRetry={onRetry} /&gt;;
+    default:
+      return &lt;GeneralApiError errorMessage={errorMessage} onRetry={onRetry}</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div><a name="tsx-clones"></a><h2 class="text-2xl font-semibold text-gray-700 mb-4">tsx</h2><div class="divide-y divide-gray-200 border-b-2"><div class="py-4"><p class="text-gray-600">app\docs\[slug]\page.tsx (Line 72:4 - Line 83:7), app\docs\[slug]\page.tsx (Line 52:2 - Line 63:3)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn1" onclick="toggleCodeBlock('cloneGroup1', 'expandBtn1', 'collapseBtn1')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn1" onclick="toggleCodeBlock('cloneGroup1', 'expandBtn1', 'collapseBtn1')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup1"><code class="language-tsx text-sm text-gray-800">&gt;
+        &lt;div className=&quot;mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded&quot;&gt;
+          &lt;h2 className=&quot;text-lg font-bold&quot;&gt;デバッグ情報&lt;/h2&gt;
+          &lt;pre className=&quot;text-xs overflow-auto mt-2&quot;&gt;
+            {JSON.stringify(debug, null, 2)}
+          &lt;/pre&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    )
+  }
+
+  return</code></pre></div><div class="py-4"><p class="text-gray-600">app\docs\terms-of-trade\page.tsx (Line 29:8 - Line 39:3), app\docs\[slug]\page.tsx (Line 63:8 - Line 73:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn2" onclick="toggleCodeBlock('cloneGroup2', 'expandBtn2', 'collapseBtn2')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn2" onclick="toggleCodeBlock('cloneGroup2', 'expandBtn2', 'collapseBtn2')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup2"><code class="language-tsx text-sm text-gray-800">) {
+    return (
+      &lt;div className=&quot;container mx-auto px-4 py-8&quot;&gt;
+        &lt;div className=&quot;animate-pulse&quot;&gt;
+          &lt;div className=&quot;h-10 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-6&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-11/12 mb-2.5&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5 mb-2.5&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/</code></pre></div><div class="py-4"><p class="text-gray-600">app\docs\privacy-policy\page.tsx (Line 13:32 - Line 51:2), app\docs\terms-of-trade\page.tsx (Line 13:32 - Line 51:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn3" onclick="toggleCodeBlock('cloneGroup3', 'expandBtn3', 'collapseBtn3')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn3" onclick="toggleCodeBlock('cloneGroup3', 'expandBtn3', 'collapseBtn3')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup3"><code class="language-tsx text-sm text-gray-800">)
+        if (!response.ok) {
+          throw new Error('Failed to fetch content')
+        }
+        const data = await response.json()
+        setContent(data.content)
+      } catch (error) {
+        console.error('Error fetching content:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchContent()
+  }, [])
+
+  if (loading) {
+    return (
+      &lt;div className=&quot;container mx-auto px-4 py-8&quot;&gt;
+        &lt;div className=&quot;animate-pulse&quot;&gt;
+          &lt;div className=&quot;h-10 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-6&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2.5&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-11/12 mb-2.5&quot;&gt;&lt;/div&gt;
+          &lt;div className=&quot;h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5 mb-2.5&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    )
+  }
+
+  return (
+    &lt;div className=&quot;container mx-auto px-4 py-8 max-w-4xl terms-of-trade-container&quot;&gt;
+      &lt;div 
+        className=&quot;terms-content prose dark:prose-invert lg:prose-lg&quot;
+        dangerouslySetInnerHTML={{ __html: content }} 
+      /&gt;
+    &lt;/div&gt;
+  )
+}</code></pre></div><div class="py-4"><p class="text-gray-600">components\video-table.tsx (Line 415:17 - Line 423:2), components\video-table.tsx (Line 402:6 - Line 411:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn7" onclick="toggleCodeBlock('cloneGroup7', 'expandBtn7', 'collapseBtn7')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn7" onclick="toggleCodeBlock('cloneGroup7', 'expandBtn7', 'collapseBtn7')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup7"><code class="language-tsx text-sm text-gray-800">);
+                                  // 直接のアプローチを試みる（フォールバック）
+                                  const link = document.createElement('a');
+                                  link.href = video.thumbnail || &quot;/placeholder.svg&quot;;
+                                  link.download = `${video.title.replace(/[/\\?%*:|&quot;&lt;&gt;]/g, '-')}.jpg`;
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                };</code></pre></div><div class="py-4"><p class="text-gray-600">components\layout.tsx (Line 244:2 - Line 260:5), components\layout.tsx (Line 218:4 - Line 234:3)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn8" onclick="toggleCodeBlock('cloneGroup8', 'expandBtn8', 'collapseBtn8')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn8" onclick="toggleCodeBlock('cloneGroup8', 'expandBtn8', 'collapseBtn8')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup8"><code class="language-tsx text-sm text-gray-800">&gt;
+            &lt;Button
+              variant=&quot;ghost&quot;
+              size=&quot;icon&quot;
+              onClick={toggleTheme}
+              className=&quot;rounded-full w-9 h-9 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300&quot;
+            &gt;
+              {mounted &amp;&amp; theme === &quot;dark&quot; ? (
+                &lt;Sun className=&quot;h-[1.2rem] w-[1.2rem] text-yellow-500 hover:rotate-45 transition-transform duration-300&quot; /&gt;
+              ) : (
+                &lt;Moon className=&quot;h-[1.2rem] w-[1.2rem] text-slate-700 dark:text-slate-400 hover:rotate-12 transition-transform duration-300&quot; /&gt;
+              )}
+              &lt;span className=&quot;sr-only&quot;&gt;テーマ切替&lt;/span&gt;
+            &lt;/Button&gt;
+            &lt;Button
+              variant=&quot;ghost&quot;
+              size=&quot;icon</code></pre></div><div class="py-4"><p class="text-gray-600">components\description-accordion.tsx (Line 48:9 - Line 56:2), components\description-accordion.tsx (Line 31:7 - Line 38:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn9" onclick="toggleCodeBlock('cloneGroup9', 'expandBtn9', 'collapseBtn9')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn9" onclick="toggleCodeBlock('cloneGroup9', 'expandBtn9', 'collapseBtn9')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup9"><code class="language-tsx text-sm text-gray-800">{text.split('\n').map((line, i) =&gt; (
+          &lt;span key={i}&gt;
+            {line}
+            {i &lt; text.split('\n').length - 1 &amp;&amp; &lt;br /&gt;}
+          &lt;/span&gt;
+        ))}
+      &lt;/div&gt;
+      
+      {</code></pre></div><div class="py-4"><p class="text-gray-600">components\ApiErrorHandler.tsx (Line 190:24 - Line 200:61), components\ApiErrorHandler.tsx (Line 155:59 - Line 165:180)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn11" onclick="toggleCodeBlock('cloneGroup11', 'expandBtn11', 'collapseBtn11')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn11" onclick="toggleCodeBlock('cloneGroup11', 'expandBtn11', 'collapseBtn11')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup11"><code class="language-tsx text-sm text-gray-800">&quot; /&gt;
+          &lt;div className=&quot;space-y-1.5&quot;&gt;
+            &lt;p className=&quot;font-medium&quot;&gt;{errorMessage}&lt;/p&gt;
+            &lt;p className=&quot;text-xs opacity-90&quot;&gt;{getErrorGuidance(errorMessage)}&lt;/p&gt;
+            
+            {onRetry &amp;&amp; (
+              &lt;Button 
+                variant=&quot;outline&quot;
+                size=&quot;sm&quot; 
+                onClick={onRetry}
+                className=&quot;mt-1.5 h-8 px-2 text-xs bg-background hover:bg-background/80</code></pre></div><div class="py-4"><p class="text-gray-600">components\api-error-handler.tsx (Line 1:1 - Line 241:2), components\ApiErrorHandler.tsx (Line 1:1 - Line 241:2)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn13" onclick="toggleCodeBlock('cloneGroup13', 'expandBtn13', 'collapseBtn13')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn13" onclick="toggleCodeBlock('cloneGroup13', 'expandBtn13', 'collapseBtn13')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup13"><code class="language-tsx text-sm text-gray-800">'use client';
+
+import { useState, useEffect } from 'react';
+import { AlertCircle, RefreshCw, Clock, Info } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+
+interface ApiErrorHandlerProps {
+  errorMessage: string;
+  onRetry?: () =&gt; void;
+  className?: string;
+}
+
+/**
+ * API エラーメッセージを判別してエラータイプを返す
+ */
+function getErrorType(message: string): 'quota' | 'auth' | 'network' | 'validation' | 'general' {
+  // クォータ超過エラーの検出
+  if (
+    message.includes('quota') || 
+    message.includes('Quota') || 
+    message.includes('quotaExceeded') ||
+    message.includes('dailyLimitExceeded')
+  ) {
+    return 'quota';
+  }
+  
+  // 認証エラーの検出
+  if (
+    message.includes('auth') || 
+    message.includes('Auth') || 
+    message.includes('invalid_key') ||
+    message.includes('APIキーが無効') ||
+    message.includes('API key') ||
+    message.includes('API Key')
+  ) {
+    return 'auth';
+  }
+  
+  // 入力バリデーションエラーの検出
+  if (
+    message.includes('有効なYouTubeチャンネル') ||
+    message.includes('URL') ||
+    message.includes('入力') ||
+    message.includes('channel')
+  ) {
+    return 'validation';
+  }
+  
+  // ネットワークエラーの検出
+  if (
+    message.includes('network') || 
+    message.includes('timeout') || 
+    message.includes('接続') ||
+    message.includes('connect')
+  ) {
+    return 'network';
+  }
+  
+  // それ以外の一般エラー
+  return 'general';
+}
+
+/**
+ * エラーメッセージに基づいてカスタムガイダンスを表示
+ */
+function getErrorGuidance(error: string): string {
+  if (error.includes(&quot;API Key&quot;)) {
+    return &quot;設定画面からAPI Keyを追加してください。&quot;;
+  }
+  if (error.includes(&quot;有効なYouTubeチャンネル&quot;)) {
+    return &quot;例: https://www.youtube.com/@GoogleDevelopers または @GoogleDevelopers&quot;;
+  }
+  if (error.includes(&quot;取得に失敗&quot;)) {
+    return &quot;ネットワーク接続を確認するか、別のチャンネルを試してください。&quot;;
+  }
+  return &quot;もう一度お試しいただくか、入力内容をご確認ください。&quot;;
+}
+
+/**
+ * YouTube API クォータ超過エラー専用のコンポーネント
+ */
+function QuotaExceededError({ onRetry }: { onRetry?: () =&gt; void }) {
+  return (
+    &lt;motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;Card className=&quot;border-red-300 bg-red-50 dark:bg-red-950/20 dark:border-red-900&quot;&gt;
+        &lt;CardHeader className=&quot;pb-2&quot;&gt;
+          &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+            &lt;AlertCircle className=&quot;h-5 w-5 text-red-500&quot; /&gt;
+            &lt;CardTitle className=&quot;text-red-700 dark:text-red-400&quot;&gt;YouTube API クォータ超過&lt;/CardTitle&gt;
+          &lt;/div&gt;
+          &lt;CardDescription className=&quot;text-red-500 dark:text-red-400 mt-1&quot;&gt;
+            YouTube Data API の 1日の利用制限を超えました
+          &lt;/CardDescription&gt;
+        &lt;/CardHeader&gt;
+        &lt;CardContent className=&quot;space-y-4&quot;&gt;
+          &lt;p className=&quot;text-sm text-red-700 dark:text-red-300&quot;&gt;
+            YouTube API の1日あたりのリクエスト制限（クォータ）を超過しました。
+            この制限は毎日太平洋標準時（PST）の午前0時にリセットされます。
+          &lt;/p&gt;
+          
+          &lt;Alert className=&quot;bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900&quot;&gt;
+            &lt;Info className=&quot;h-4 w-4 text-amber-600 dark:text-amber-400&quot; /&gt;
+            &lt;AlertTitle className=&quot;text-amber-800 dark:text-amber-300 text-sm font-medium&quot;&gt;対処方法&lt;/AlertTitle&gt;
+            &lt;AlertDescription className=&quot;text-amber-700 dark:text-amber-400 text-xs mt-1&quot;&gt;
+              &lt;ul className=&quot;list-disc pl-4 space-y-1&quot;&gt;
+                &lt;li&gt;明日以降に再度お試しください&lt;/li&gt;
+                &lt;li&gt;別のAPIキーを使用する&lt;/li&gt;
+                &lt;li&gt;同じAPIキーでのリクエスト数を減らす&lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/AlertDescription&gt;
+          &lt;/Alert&gt;
+        &lt;/CardContent&gt;
+        &lt;CardFooter className=&quot;flex justify-between&quot;&gt;
+          &lt;div className=&quot;flex items-center text-xs text-gray-500 dark:text-gray-400&quot;&gt;
+            &lt;Clock className=&quot;h-3 w-3 mr-1&quot; /&gt;
+            &lt;span&gt;明日にリセットされます&lt;/span&gt;
+          &lt;/div&gt;
+          {onRetry &amp;&amp; (
+            &lt;Button
+              size=&quot;sm&quot;
+              variant=&quot;outline&quot;
+              onClick={onRetry}
+              className=&quot;gap-1&quot;
+            &gt;
+              &lt;RefreshCw className=&quot;h-3 w-3&quot; /&gt;
+              再試行
+            &lt;/Button&gt;
+          )}
+        &lt;/CardFooter&gt;
+      &lt;/Card&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * 入力バリデーションエラー専用のコンポーネント
+ */
+function ValidationError({ errorMessage, onRetry }: { errorMessage: string; onRetry?: () =&gt; void }) {
+  return (
+    &lt;motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;div className=&quot;rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-900 p-3 text-sm text-amber-800 dark:text-amber-300&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+          &lt;Info className=&quot;h-5 w-5 shrink-0 mt-0.5 text-amber-500 dark:text-amber-400&quot; /&gt;
+          &lt;div className=&quot;space-y-1.5&quot;&gt;
+            &lt;p className=&quot;font-medium&quot;&gt;{errorMessage}&lt;/p&gt;
+            &lt;p className=&quot;text-xs opacity-90&quot;&gt;{getErrorGuidance(errorMessage)}&lt;/p&gt;
+            
+            {onRetry &amp;&amp; (
+              &lt;Button 
+                variant=&quot;outline&quot;
+                size=&quot;sm&quot; 
+                onClick={onRetry}
+                className=&quot;mt-1.5 h-8 px-2 text-xs border-amber-300 bg-amber-50/50 hover:bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:bg-amber-900/30&quot;
+              &gt;
+                &lt;RefreshCw className=&quot;h-3 w-3 mr-1&quot; /&gt;
+                再試行
+              &lt;/Button&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * 一般的なAPIエラー表示コンポーネント
+ */
+function GeneralApiError({ errorMessage, onRetry }: { errorMessage: string; onRetry?: () =&gt; void }) {
+  return (
+    &lt;motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    &gt;
+      &lt;div className=&quot;rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+          &lt;AlertCircle className=&quot;h-5 w-5 shrink-0 mt-0.5&quot; /&gt;
+          &lt;div className=&quot;space-y-1.5&quot;&gt;
+            &lt;p className=&quot;font-medium&quot;&gt;{errorMessage}&lt;/p&gt;
+            &lt;p className=&quot;text-xs opacity-90&quot;&gt;{getErrorGuidance(errorMessage)}&lt;/p&gt;
+            
+            {onRetry &amp;&amp; (
+              &lt;Button 
+                variant=&quot;outline&quot;
+                size=&quot;sm&quot; 
+                onClick={onRetry}
+                className=&quot;mt-1.5 h-8 px-2 text-xs bg-background hover:bg-background/80&quot;
+              &gt;
+                &lt;RefreshCw className=&quot;h-3 w-3 mr-1&quot; /&gt;
+                再試行
+              &lt;/Button&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/motion.div&gt;
+  );
+}
+
+/**
+ * API エラーハンドラーコンポーネント
+ * エラーメッセージの内容を解析し、適切なエラー表示を行います
+ */
+export function ApiErrorHandler({ errorMessage, onRetry, className }: ApiErrorHandlerProps) {
+  const [errorType, setErrorType] = useState&lt;'quota' | 'auth' | 'network' | 'validation' | 'general'&gt;('general');
+  
+  // エラーメッセージからエラータイプを判別
+  useEffect(() =&gt; {
+    if (errorMessage) {
+      setErrorType(getErrorType(errorMessage));
+    }
+  }, [errorMessage]);
+  
+  // エラーがない場合は何も表示しない
+  if (!errorMessage) {
+    return null;
+  }
+  
+  // エラータイプに応じたコンポーネントを表示
+  switch (errorType) {
+    case 'quota':
+      return &lt;QuotaExceededError onRetry={onRetry} /&gt;;
+    case 'validation':
+      return &lt;ValidationError errorMessage={errorMessage} onRetry={onRetry} /&gt;;
+    default:
+      return &lt;GeneralApiError errorMessage={errorMessage} onRetry={onRetry} /&gt;;
+  }
+}</code></pre></div><div class="py-4"><p class="text-gray-600">app\page.tsx (Line 56:7 - Line 73:6), components\login-form.tsx (Line 44:7 - Line 61:9)</p><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2" id="expandBtn14" onclick="toggleCodeBlock('cloneGroup14', 'expandBtn14', 'collapseBtn14')">Show code</button><button class="bg-gray-500 text-white px-1 py-0.5 text-xs rounded focus:outline-none ml-2 hidden" id="collapseBtn14" onclick="toggleCodeBlock('cloneGroup14', 'expandBtn14', 'collapseBtn14')">Hide code</button><pre class="bg-gray-100 border border-gray-200 p-4 rounded mt-2 hidden" id="cloneGroup14"><code class="language-tsx text-sm text-gray-800">if (data.success) {
+        toast({
+          title: &quot;ログイン成功&quot;,
+          description: &quot;ダッシュボードにリダイレクトします&quot;,
+        })
+        // 強制的にページをリロードしてミドルウェアを通す
+        window.location.href = &quot;/dashboard&quot;
+      } else {
+        setError(data.message || &quot;パスワードが正しくありません&quot;)
+        toast({
+          title: &quot;ログイン失敗&quot;,
+          description: data.message || &quot;パスワードが正しくありません&quot;,
+          variant: &quot;destructive&quot;,
+        })
+      }
+    } catch (error) {
+      console.error(&quot;Login error:&quot;, error)
+      const</code></pre></div><!-- Add more clone groups for .txt format as needed         // Add more clone groups for .txt format as needed--></div></section><!-- Add more sections for other formats and clone groups as needed--></main><footer class="bg-white shadow mt-8 py-4"><div class="container mx-auto px-4 text-center"><p class="text-sm text-gray-600">This report is generated by jscpd, an open-source copy/paste detector.</p><p class="text-sm text-gray-600">jscpd is licensed under the MIT License.</p><a class="text-blue-500 text-sm" href="https://github.com/kucherenko/jscpd" target="_blank" rel="noopener noreferrer">View jscpd on GitHub</a></div></footer><script src="js/prism.js"></script><script>function toggleCodeBlock(codeBlockId, expandBtnId, collapseBtnId) {
+  const codeBlock = document.getElementById(codeBlockId);
+  const expandBtn = document.getElementById(expandBtnId);
+  const collapseBtn = document.getElementById(collapseBtnId);
+
+  codeBlock.classList.toggle('hidden');
+  expandBtn.classList.toggle('hidden');
+  collapseBtn.classList.toggle('hidden');
+}</script></body></html>

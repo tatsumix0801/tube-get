@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Google Fontsのインポート */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&family=Poppins:wght@500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    
+    /* 新しいブランドカラー */
+    --primary: 344 100% 60%; /* #FF3366 - ビビッドピンク */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 214 100% 62%; /* #3A86FF - 鮮やかなブルー */
+    --secondary-foreground: 0 0% 98%;
+    --accent: 49 100% 52%; /* #FFD60A - イエロー */
+    --accent-foreground: 0 0% 9%;
+    
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 344 100% 60%; /* プライマリーと同じ */
+    
+    /* チャートカラー更新 */
+    --chart-1: 344 100% 60%; /* #FF3366 */
+    --chart-2: 214 100% 62%; /* #3A86FF */
+    --chart-3: 49 100% 52%;  /* #FFD60A */
+    --chart-4: 271 100% 65%; /* #9B51E0 - 紫 */
+    --chart-5: 163 94% 43%;  /* #0CC08E - ターコイズ */
+    
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 344 100% 60%; /* プライマリーと同じ */
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 214 100% 62%; /* セカンダリーと同じ */
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    /* ダークモードでも一貫したブランドカラー */
+    --primary: 344 100% 60%; /* #FF3366 */
+    --primary-foreground: 0 0% 98%;
+    --secondary: 214 100% 62%; /* #3A86FF */
+    --secondary-foreground: 0 0% 98%;
+    --accent: 49 100% 52%; /* #FFD60A */
+    --accent-foreground: 0 0% 9%;
+    
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 344 100% 60%;
+    
+    /* チャートカラー - ダークモードでも明るく見やすく */
+    --chart-1: 344 100% 65%; /* #FF4D7A - 明るいピンク */
+    --chart-2: 214 100% 67%; /* #5A9BFF - 明るいブルー */
+    --chart-3: 49 100% 57%;  /* #FFDD33 - 明るいイエロー */
+    --chart-4: 271 100% 70%; /* #AF73E5 - 明るい紫 */
+    --chart-5: 163 94% 48%;  /* #12D69D - 明るいターコイズ */
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 344 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 214 100% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-montserrat font-bold;
+  }
+  button, .cta {
+    @apply font-poppins font-semibold;
+  }
+}
+
+/* アニメーションスタイル追加 */
+@layer utilities {
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+  
+  .hover-bright {
+    @apply transition-filter duration-200 hover:brightness-110;
+  }
+  
+  .brand-shadow {
+    box-shadow: 0 4px 14px rgba(255, 51, 102, 0.25);
+  }
+  
+  .brand-gradient {
+    background: linear-gradient(135deg, #FF3366 0%, #3A86FF 100%);
+  }
+}

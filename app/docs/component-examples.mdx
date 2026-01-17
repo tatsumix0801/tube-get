@@ -1,0 +1,363 @@
+---
+title: コンポーネント例
+description: UIコンポーネントの使用例
+---
+
+このドキュメントでは、つべナビで使用している主要コンポーネントの使用例を紹介します。
+
+## 目次
+
+- [基本UIコンポーネント](#基本uiコンポーネント)
+  - [Button](#button)
+  - [Card](#card)
+  - [Tabs](#tabs)
+- [機能コンポーネント](#機能コンポーネント)
+  - [VideoTable](#videotable)
+  - [ChannelImageDownload](#channelimagedownload)
+  - [ChannelTags](#channeltags)
+  - [VideoTags](#videotags)
+  - [DisplaySettings](#displaysettings)
+- [フォームコンポーネント](#フォームコンポーネント)
+  - [ChannelInfoForm](#channelinfoform)
+  - [LoginForm](#loginform)
+- [レイアウトコンポーネント](#レイアウトコンポーネント)
+  - [Layout](#layout)
+  - [Header](#header)
+
+## 基本UIコンポーネント
+
+### Button
+
+基本的なボタンコンポーネントです。複数のバリエーションがあります。
+
+```tsx
+import { Button } from "@/components/ui/button";
+
+// 基本的な使用法
+<Button>クリック</Button>
+
+// バリエーション
+<Button variant="default">デフォルト</Button>
+<Button variant="destructive">削除</Button>
+<Button variant="outline">アウトライン</Button>
+<Button variant="ghost">ゴースト</Button>
+<Button variant="link">リンク</Button>
+
+// サイズ
+<Button size="default">デフォルト</Button>
+<Button size="sm">小</Button>
+<Button size="lg">大</Button>
+
+// 無効状態
+<Button disabled>無効</Button>
+
+// アイコンつき
+import { FileDownload } from "lucide-react";
+<Button>
+  <FileDownload className="mr-2 h-4 w-4" />
+  ダウンロード
+</Button>
+```
+
+### Card
+
+情報を表示するためのカードコンポーネントです。
+
+```tsx
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+<Card>
+  <CardHeader>
+    <CardTitle>チャンネル統計</CardTitle>
+    <CardDescription>チャンネルの主要な指標</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>コンテンツをここに配置</p>
+  </CardContent>
+  <CardFooter>
+    <p>フッターコンテンツ</p>
+  </CardFooter>
+</Card>
+```
+
+### Tabs
+
+タブ切り替えインターフェースを提供するコンポーネントです。
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+<Tabs defaultValue="overview" className="w-full">
+  <TabsList>
+    <TabsTrigger value="overview">概要</TabsTrigger>
+    <TabsTrigger value="analytics">分析</TabsTrigger>
+    <TabsTrigger value="reports">レポート</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview">概要の内容...</TabsContent>
+  <TabsContent value="analytics">分析の内容...</TabsContent>
+  <TabsContent value="reports">レポートの内容...</TabsContent>
+</Tabs>
+```
+
+## 機能コンポーネント
+
+### VideoTable
+
+動画一覧を表示するテーブルコンポーネントです。
+
+```tsx
+import { VideoTable } from "@/components/video-table";
+
+// 基本的な使用法
+<VideoTable videos={videos} />
+
+// 表示設定を使用する場合
+<VideoTable 
+  videos={videos} 
+  displaySettings={{
+    showViews: true,
+    showLikes: true,
+    showComments: true,
+    showSpreadRate: true,
+    showDuration: true,
+    showTags: true
+  }} 
+/>
+
+// カスタムアクション
+<VideoTable 
+  videos={videos} 
+  onVideoClick={(video) => {
+    console.log("動画がクリックされました:", video);
+  }}
+/>
+```
+
+### ChannelImageDownload
+
+チャンネルのアイコンとバナー画像をダウンロードするためのコンポーネントです。
+
+```tsx
+import { ChannelImageDownload } from "@/components/channel-image-download";
+
+<ChannelImageDownload
+  channelId="UCxxxxxxxxxxxxxxxx"
+  apiKey="YOUR_YOUTUBE_API_KEY"
+/>
+```
+
+### ChannelTags
+
+チャンネルのタグ（キーワード）を表示するコンポーネントです。
+
+```tsx
+import { ChannelTags } from "@/components/channel-tags";
+
+// タグのリストを直接渡す場合
+<ChannelTags tags={["ゲーム", "エンタメ", "テクノロジー"]} />
+
+// APIから自動取得する場合
+<ChannelTags
+  channelId="UCxxxxxxxxxxxxxxxx"
+  apiKey="YOUR_YOUTUBE_API_KEY"
+  autoFetch={true}
+/>
+```
+
+### VideoTags
+
+動画のタグを表示および管理するコンポーネントです。
+
+```tsx
+import { VideoTags } from "@/components/video-tags";
+
+// 読み取り専用モード
+<VideoTags
+  videoId="video123"
+  tags={["ゲーム", "実況", "攻略"]}
+  readonly={true}
+/>
+
+// APIから自動取得するモード
+<VideoTags
+  videoId="video123"
+  apiKey="YOUR_YOUTUBE_API_KEY"
+  autoFetch={true}
+/>
+
+// 編集可能モード
+<VideoTags
+  videoId="video123"
+  tags={initialTags}
+  readonly={false}
+  onTagsChange={(newTags) => {
+    console.log("タグが更新されました:", newTags);
+  }}
+/>
+```
+
+### DisplaySettings
+
+表示設定を管理するコンポーネントです。
+
+```tsx
+import { DisplaySettings } from "@/components/display-settings";
+
+<DisplaySettings
+  initialSettings={{
+    showViews: true,
+    showLikes: true,
+    showComments: true,
+    showSpreadRate: true,
+    showDuration: true,
+    showTags: false
+  }}
+  onChange={(settings) => {
+    console.log("設定が変更されました:", settings);
+    // 状態更新など
+  }}
+/>
+```
+
+## フォームコンポーネント
+
+### ChannelInfoForm
+
+チャンネル情報入力フォームコンポーネントです。
+
+```tsx
+import { ChannelInfoForm } from "@/components/channel-info-form";
+
+<ChannelInfoForm
+  onSubmit={(data) => {
+    console.log("フォームが送信されました:", data);
+    // APIリクエストなどの処理
+  }}
+  initialValues={{
+    channelUrl: "",
+    apiKey: sessionStorage.getItem("youtube_api_key") || ""
+  }}
+  isLoading={false}
+/>
+```
+
+### LoginForm
+
+ログインフォームコンポーネントです。
+
+```tsx
+import { LoginForm } from "@/components/login-form";
+
+<LoginForm
+  onSubmit={(data) => {
+    console.log("ログインデータ:", data);
+    // 認証API呼び出しなど
+  }}
+  isLoading={false}
+  error={null}
+/>
+```
+
+## レイアウトコンポーネント
+
+### Layout
+
+アプリケーション全体のレイアウトを提供するコンポーネントです。
+
+```tsx
+import { Layout } from "@/components/layout";
+
+<Layout>
+  {/* ページコンテンツ */}
+  <h1>メインコンテンツ</h1>
+  <p>ここにページの内容が入ります。</p>
+</Layout>
+```
+
+### Header
+
+アプリケーションのヘッダーコンポーネントです。
+
+```tsx
+import { Header } from "@/components/header";
+
+<Header
+  title="つべナビ"
+  user={{ name: "ユーザー名", avatar: "/avatar.png" }}
+  onLogout={() => {
+    // ログアウト処理
+  }}
+/>
+```
+
+## 状態管理との連携
+
+各コンポーネントは状態管理と組み合わせて使用することができます。以下はReact Hooksを使った例です。
+
+```tsx
+import { useState } from "react";
+import { DisplaySettings } from "@/components/display-settings";
+import { VideoTable } from "@/components/video-table";
+
+function VideoAnalyticsPage() {
+  const [displaySettings, setDisplaySettings] = useState({
+    showViews: true,
+    showLikes: true,
+    showComments: true,
+    showSpreadRate: true,
+    showDuration: true,
+    showTags: false
+  });
+  
+  return (
+    <div>
+      <DisplaySettings
+        initialSettings={displaySettings}
+        onChange={setDisplaySettings}
+      />
+      
+      <VideoTable
+        videos={videos}
+        displaySettings={displaySettings}
+      />
+    </div>
+  );
+}
+```
+
+## カスタマイズ
+
+コンポーネントはテーマやスタイルをカスタマイズできます。Tailwind CSSクラスを使用して直接スタイルを変更したり、テーマプロバイダーを通じてグローバルなスタイル変更を行うことができます。
+
+```tsx
+// 個別のコンポーネントのスタイル変更
+<Button className="bg-purple-600 hover:bg-purple-700">
+  カスタムボタン
+</Button>
+
+// テーマの変更
+import { ThemeProvider } from "@/components/theme-provider";
+
+<ThemeProvider
+  theme={{
+    colors: {
+      primary: {
+        DEFAULT: "#7c3aed",
+        foreground: "#ffffff"
+      }
+      // ...その他のカラー設定
+    }
+  }}
+>
+  <App />
+</ThemeProvider>
+```
+
+これらのコンポーネントを組み合わせることで、一貫性のある美しいUIを構築することができます。

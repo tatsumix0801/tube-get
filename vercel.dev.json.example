@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "buildCommand": "npm run clean:build",
+  "cleanUrls": true,
+  "installCommand": "npm install",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        },
+        {
+          "key": "X-Environment",
+          "value": "development"
+        }
+      ]
+    }
+  ],
+  "github": {
+    "silent": true
+  },
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "NEXT_PUBLIC_ENV": "development",
+      "NEXT_PUBLIC_API_BASE_URL": "https://dev-api.tube-navi.com"
+    }
+  },
+  "functions": {
+    "app/**/*": {
+      "memory": 1024
+    }
+  }
+}

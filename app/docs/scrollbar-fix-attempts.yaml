@@ -1,0 +1,116 @@
+# スクロールバー修正の試行錯誤と学び
+# 対象: components/video-table.tsx内の横スクロールバーが表示されない問題
+
+修正履歴:
+  - 最初の修正:
+      問題: overflow-x-autoのみではスクロールバーが自動的に隠れる問題があった
+      対応: overflow-x-autoクラスを追加
+      結果: 失敗
+
+  - 2回目の修正:
+      問題: スクロールバーが表示されない問題が継続
+      対応: always-show-scrollbarカスタムクラスをapp/globals.cssに作成し適用
+      結果: 失敗
+      css: |
+        .always-show-scrollbar {
+          overflow-x: scroll !important;
+          overflow-y: hidden;
+          scrollbar-width: thin;
+          scrollbar-color: rgba(139, 92, 246, 0.5) transparent;
+        }
+        .always-show-scrollbar::-webkit-scrollbar {
+          height: 8px;
+          display: block !important;
+        }
+        .always-show-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.05);
+          border-radius: 4px;
+          display: block !important;
+        }
+        .always-show-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(139, 92, 246, 0.5);
+          border-radius: 4px;
+          display: block !important;
+        }
+
+  - 3回目の修正:
+      問題: スクロールバー表示条件が適切に設定されていなかった
+      対応: force-horizontal-scrollクラスをapp/globals.cssに作成し、より積極的に表示するように設定
+      結果: 失敗
+      css: |
+        .force-horizontal-scroll {
+          overflow-x: scroll !important;
+          overflow-y: hidden !important;
+          white-space: nowrap;
+          scrollbar-width: thin;
+          scrollbar-color: rgba(139, 92, 246, 0.5) transparent;
+          scrollbar-gutter: stable;
+          min-width: 100%;
+        }
+
+  - 4回目の修正:
+      問題: コンテナ内にさらにdivを追加しても解決しなかった
+      対応: テーブル自体に最小幅を設定して確実に表示されるようにした
+      結果: 失敗
+      jsx: |
+        <div className="force-horizontal-scroll">
+          <div className="min-w-[150%]">
+            <Table style={{ minWidth: "1200px" }}>
+              ...
+            </Table>
+          </div>
+        </div>
+
+  - 5回目の修正:
+      問題: スクロールバーが表示される条件を満たしていない可能性
+      対応: あらゆる手段を総動員
+      方法1: !importantの優先度最大化
+      方法2: 疑似要素でコンテンツ幅を広げる
+      方法3: テーブル自体の最小幅を大きく設定
+      方法4: アニメーションでスクロールバー表示を強制
+      結果: 失敗
+
+  - 6回目の修正:
+      問題: shadcn/uiのTableコンポーネントによる競合の可能性
+      対応: 
+        - インラインスタイルを中心とした根本的なアプローチ
+        - Tailwindやshadcn UIのラッパーを使わずに直接HTMLとCSSを記述
+        - テーブルの幅を強制的に大きくして、必ずスクロールが発生するように設定
+      結果: 失敗
+      jsx: |
+        <div 
+          className="horizontal-scroll-table-container"
+          style={{
+            overflowX: 'scroll',
+            overflowY: 'hidden',
+            width: '100%',
+            position: 'relative',
+            display: 'block',
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(139, 92, 246, 0.5) rgba(0, 0, 0, 0.05)'
+          }}
+        >
+          <table 
+            style={{
+              width: '200%', 
+              minWidth: '2000px',
+              borderSpacing: 0,
+              borderCollapse: 'collapse',
+              tableLayout: 'fixed'
+            }}
+          >
+            ...
+          </table>
+        </div>
+
+学び:
+  - shadowcn/uiのTableコンポーネント内のスクロール挙動と競合する可能性がある
+  - Next.jsとTailwindの組み合わせでは単純なCSSだけでは解決できない場合がある
+  - インラインスタイルでもスクロールバーの表示を強制できないケースがある
+  - ブラウザやOSによってスクロールバーの挙動が異なる可能性がある
+
+次の対応案:
+  - カスタムスクロールコンポーネントの導入を検討
+  - オーバーレイスクロールバーライブラリの使用
+  - table要素ではなくdivベースの表示に切り替える
+  - Reactの特定のライフサイクルでスクロールバーの表示を制御する方法を検討 

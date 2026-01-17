@@ -1,0 +1,73 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="#FFFFFF"/>
+  
+  <!-- グラデーション背景 -->
+  <rect width="1200" height="630" fill="url(#paint0_linear)"/>
+  
+  <!-- デコレーション要素 -->
+  <circle cx="150" cy="200" r="80" fill="#FFD60A" fill-opacity="0.1"/>
+  <circle cx="1050" cy="450" r="100" fill="#3A86FF" fill-opacity="0.1"/>
+  
+  <!-- パターン要素 - グラフモチーフ -->
+  <g opacity="0.05">
+    <rect x="250" y="550" width="20" height="120" rx="10" fill="#000000" transform="rotate(-180 250 550)"/>
+    <rect x="300" y="580" width="20" height="150" rx="10" fill="#000000" transform="rotate(-180 300 580)"/>
+    <rect x="350" y="520" width="20" height="90" rx="10" fill="#000000" transform="rotate(-180 350 520)"/>
+    <rect x="400" y="560" width="20" height="130" rx="10" fill="#000000" transform="rotate(-180 400 560)"/>
+    <rect x="450" y="540" width="20" height="110" rx="10" fill="#000000" transform="rotate(-180 450 540)"/>
+    <rect x="500" y="590" width="20" height="160" rx="10" fill="#000000" transform="rotate(-180 500 590)"/>
+    <rect x="550" y="530" width="20" height="100" rx="10" fill="#000000" transform="rotate(-180 550 530)"/>
+    <rect x="600" y="570" width="20" height="140" rx="10" fill="#000000" transform="rotate(-180 600 570)"/>
+    <rect x="650" y="510" width="20" height="80" rx="10" fill="#000000" transform="rotate(-180 650 510)"/>
+    <rect x="700" y="550" width="20" height="120" rx="10" fill="#000000" transform="rotate(-180 700 550)"/>
+    <rect x="750" y="580" width="20" height="150" rx="10" fill="#000000" transform="rotate(-180 750 580)"/>
+    <rect x="800" y="520" width="20" height="90" rx="10" fill="#000000" transform="rotate(-180 800 520)"/>
+    <rect x="850" y="560" width="20" height="130" rx="10" fill="#000000" transform="rotate(-180 850 560)"/>
+    <rect x="900" y="540" width="20" height="110" rx="10" fill="#000000" transform="rotate(-180 900 540)"/>
+    <rect x="950" y="590" width="20" height="160" rx="10" fill="#000000" transform="rotate(-180 950 590)"/>
+    <rect x="1000" y="530" width="20" height="100" rx="10" fill="#000000" transform="rotate(-180 1000 530)"/>
+  </g>
+  
+  <!-- ロゴマーク -->
+  <g transform="translate(200, 150)">
+    <circle cx="80" cy="80" r="80" fill="#FF3366"/>
+    <path d="M55 50V110L105 80L55 50Z" fill="white"/>
+    
+    <!-- グラフ要素 (半透明で重ねる) -->
+    <rect x="40" y="100" width="16" height="40" rx="5" fill="#3A86FF" fill-opacity="0.3" transform="rotate(-180 40 100)"/>
+    <rect x="65" y="113" width="16" height="53" rx="5" fill="#3A86FF" fill-opacity="0.3" transform="rotate(-180 65 113)"/>
+    <rect x="90" y="126" width="16" height="66" rx="5" fill="#3A86FF" fill-opacity="0.3" transform="rotate(-180 90 126)"/>
+    <rect x="115" y="120" width="16" height="60" rx="5" fill="#3A86FF" fill-opacity="0.3" transform="rotate(-180 115 120)"/>
+  </g>
+  
+  <!-- テキスト部分 -->
+  <g transform="translate(400, 180)">
+    <path d="M10 0H60C66.667 0 71.667 2.5 75 7.5C78.333 12.5 80 19.167 80 27.5C80 35.833 78.333 42.5 75 47.5C71.667 52.5 66.667 55 60 55H10V0ZM25 40H57.5C60.833 40 63.333 38.75 65 36.25C66.667 33.75 67.5 30 67.5 25C67.5 20 66.667 16.25 65 13.75C63.333 11.25 60.833 10 57.5 10H25V40Z" fill="#FF3366"/>
+    <path d="M94.3203 0L111.82 45L129.32 0H148.32L119.32 60H104.32L75.3203 0H94.3203Z" fill="#FF3366"/>
+    <path d="M155.32 0H214.32V15H170.32V22.5H205.32V37.5H170.32V45H214.32V60H155.32V0Z" fill="#FF3366"/>
+    <path d="M248 0L265.5 45L283 0H302L273 60H258L229 0H248Z" fill="#3A86FF"/>
+    <path d="M309 0H368V15H324V22.5H359V37.5H324V45H368V60H309V0Z" fill="#3A86FF"/>
+    <path d="M431.82 30C431.82 40 428.82 48.333 422.82 55C416.82 61.667 409.153 65 399.82 65C390.487 65 382.82 61.667 376.82 55C370.82 48.333 367.82 40 367.82 30C367.82 20 370.82 11.667 376.82 5C382.82 -1.667 390.487 -5 399.82 -5C409.153 -5 416.82 -1.667 422.82 5C428.82 11.667 431.82 20 431.82 30ZM384.82 30C384.82 35.333 386.153 39.667 388.82 43C391.487 46.333 395.153 48 399.82 48C404.487 48 408.153 46.333 410.82 43C413.487 39.667 414.82 35.333 414.82 30C414.82 24.667 413.487 20.333 410.82 17C408.153 13.667 404.487 12 399.82 12C395.153 12 391.487 13.667 388.82 17C386.153 20.333 384.82 24.667 384.82 30Z" fill="#3A86FF"/>
+    <path d="M498.32 0V60H483.32V35H458.32V60H443.32V0H458.32V20H483.32V0H498.32Z" fill="#3A86FF"/>
+    <path d="M511.32 0H526.32V60H511.32V0Z" fill="#3A86FF"/>
+  </g>
+  
+  <!-- タグライン -->
+  <text x="600" y="320" text-anchor="middle" font-family="Inter, sans-serif" font-size="24" font-weight="500" fill="#333333">
+    YouTubeチャンネル分析・インサイト・最適化
+  </text>
+  
+  <!-- デザイン要素 -->
+  <circle cx="600" cy="400" r="5" fill="#FF3366"/>
+  <circle cx="630" cy="400" r="5" fill="#3A86FF"/>
+  <circle cx="660" cy="400" r="5" fill="#FFD60A"/>
+  
+  <!-- グラデーション定義 -->
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F8F9FA"/>
+    </linearGradient>
+  </defs>
+</svg> 

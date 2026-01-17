@@ -1,0 +1,348 @@
+# つべナビ セットアップガイド
+
+このガイドでは、つべナビの開発環境および本番環境のセットアップ方法について詳しく説明します。
+
+## 目次
+
+- [開発環境のセットアップ](#開発環境のセットアップ)
+  - [必要条件](#必要条件)
+  - [リポジトリのクローン](#リポジトリのクローン)
+  - [依存パッケージのインストール](#依存パッケージのインストール)
+  - [環境変数の設定](#環境変数の設定)
+  - [開発サーバーの起動](#開発サーバーの起動)
+- [データベースのセットアップ](#データベースのセットアップ)
+  - [ローカルデータベース](#ローカルデータベース)
+  - [マイグレーションの実行](#マイグレーションの実行)
+- [テスト](#テスト)
+  - [テストの実行](#テストの実行)
+  - [カバレッジレポート](#カバレッジレポート)
+- [本番環境へのデプロイ](#本番環境へのデプロイ)
+  - [Vercelへのデプロイ](#vercelへのデプロイ)
+  - [その他のプラットフォーム](#その他のプラットフォーム)
+- [CI/CDパイプラインの設定](#cicdパイプラインの設定)
+- [トラブルシューティング](#トラブルシューティング)
+
+## 開発環境のセットアップ
+
+### 必要条件
+
+つべナビの開発には以下のソフトウェアが必要です：
+
+- **Node.js**: バージョン18.0.0以上
+- **npm** または **pnpm**: 依存パッケージの管理
+- **Git**: バージョン管理
+- **モダンブラウザ**: Chrome、Firefox、Safari、Edgeなど
+
+Node.jsのインストール方法については、[公式サイト](https://nodejs.org/)を参照してください。
+
+### リポジトリのクローン
+
+以下のコマンドを実行して、リポジトリをローカル環境にクローンします：
+
+```bash
+# HTTPSを使用
+git clone https://github.com/yourusername/tubenavi-app.git
+
+# SSHを使用（設定済みの場合）
+git clone git@github.com:yourusername/tubenavi-app.git
+
+# クローンしたディレクトリに移動
+cd tubenavi-app
+```
+
+### 依存パッケージのインストール
+
+プロジェクトディレクトリ内で以下のコマンドを実行して、依存パッケージをインストールします：
+
+```bash
+# npmを使用
+npm install
+
+# または pnpmを使用
+pnpm install
+```
+
+インストールには数分かかる場合があります。すべての依存パッケージがインストールされるまで待ちましょう。
+
+### 環境変数の設定
+
+プロジェクトルートディレクトリに`.env.local`ファイルを作成し、必要な環境変数を設定します：
+
+```env
+# アプリケーション設定
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# YouTube API設定
+YOUTUBE_API_KEY=your_youtube_api_key_here
+
+# 認証設定（NextAuth.js）
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret_here
+
+# データベース設定（使用する場合）
+DATABASE_URL=your_database_url_here
+
+# API設定
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+```
+
+各環境変数の説明：
+
+- `NEXT_PUBLIC_APP_URL`: アプリケーションのベースURL
+- `YOUTUBE_API_KEY`: YouTube Data API v3のAPIキー。[こちら](/docs/api-key-guide)で取得方法を確認できます。
+- `NEXTAUTH_URL`: 認証用のコールバックURLベース
+- `NEXTAUTH_SECRET`: 認証情報の暗号化に使用するシークレットキー（32文字以上のランダムな文字列を推奨）
+- `DATABASE_URL`: データベース接続文字列（PostgreSQL、MySQL等を使用する場合）
+- `NEXT_PUBLIC_API_URL`: APIエンドポイントのベースURL
+
+### 開発サーバーの起動
+
+依存パッケージのインストールと環境変数の設定が完了したら、以下のコマンドで開発サーバーを起動します：
+
+```bash
+# npmを使用
+npm run dev
+
+# または pnpmを使用
+pnpm dev
+```
+
+開発サーバーが正常に起動すると、以下のようなメッセージが表示されます：
+
+```
+ready - started server on 0.0.0.0:3000, url: http://localhost:3000
+info  - Loaded env from .env.local
+```
+
+これで、ブラウザで[http://localhost:3000](http://localhost:3000)にアクセスして、アプリケーションを確認できます。
+
+## データベースのセットアップ
+
+### ローカルデータベース
+
+つべナビは、デフォルトでSQLiteを使用していますが、本番環境ではPostgreSQLの使用を推奨しています。
+
+#### SQLite（開発環境）
+
+開発環境ではSQLiteを使用することで、追加のセットアップなしで開発を開始できます。特別な設定は不要です。
+
+#### PostgreSQL（推奨）
+
+PostgreSQLをローカルにインストールするか、[Railway](https://railway.app/)や[Supabase](https://supabase.com/)などのクラウドサービスを利用できます。
+
+PostgreSQLをセットアップした後、`.env.local`ファイルの`DATABASE_URL`を更新します：
+
+```env
+DATABASE_URL=postgresql://username:password@localhost:5432/tubenavi_db
+```
+
+### マイグレーションの実行
+
+データベーススキーマを作成または更新するには、以下のコマンドを実行します：
+
+```bash
+# マイグレーションの実行
+npx prisma migrate dev
+
+# Prismaクライアントの生成
+npx prisma generate
+```
+
+## テスト
+
+### テストの実行
+
+以下のコマンドでテストを実行できます：
+
+```bash
+# すべてのテストを実行
+npm run test
+
+# または pnpmを使用
+pnpm test
+
+# ウォッチモードでテストを実行
+npm run test:watch
+```
+
+### カバレッジレポート
+
+テストカバレッジレポートを生成するには：
+
+```bash
+npm run test:coverage
+```
+
+生成されたレポートは`coverage`ディレクトリに保存され、ブラウザで`coverage/lcov-report/index.html`を開くことで確認できます。
+
+## 本番環境へのデプロイ
+
+### Vercelへのデプロイ
+
+つべナビはVercelへのデプロイが最も簡単です：
+
+1. [Vercel](https://vercel.com/)にアカウントを作成（GitHubアカウントでログイン可能）
+2. 「New Project」をクリック
+3. GitHubからリポジトリをインポート
+4. 環境変数を設定
+5. 「Deploy」をクリック
+
+デプロイが完了すると、Vercelはプロジェクト用のURLを提供します。
+
+### その他のプラットフォーム
+
+#### ビルドプロセス
+
+他のプラットフォームにデプロイする場合は、以下のステップに従います：
+
+1. 本番用ビルドを作成する：
+
+```bash
+# npmを使用
+npm run build
+
+# または pnpmを使用
+pnpm build
+```
+
+2. 本番サーバーを起動する：
+
+```bash
+# npmを使用
+npm run start
+
+# または pnpmを使用
+pnpm start
+```
+
+#### コンテナ化（Docker）
+
+Dockerを使用する場合、プロジェクトルートに以下の`Dockerfile`を作成します：
+
+```dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+ENV NODE_ENV production
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+```
+
+そして、以下のコマンドでイメージをビルドして実行します：
+
+```bash
+# イメージのビルド
+docker build -t tubenavi-app .
+
+# コンテナの実行
+docker run -p 3000:3000 -e YOUTUBE_API_KEY=your_api_key -e NEXTAUTH_SECRET=your_secret tubenavi-app
+```
+
+## CI/CDパイプラインの設定
+
+### GitHub Actions
+
+以下は、GitHub Actionsを使用したシンプルなCI/CDパイプラインの例です。
+
+`.github/workflows/main.yml`ファイルを作成：
+
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm run test
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+```
+
+## トラブルシューティング
+
+### よくある問題と解決策
+
+#### 依存パッケージのインストールエラー
+
+```bash
+# キャッシュをクリアして再インストール
+npm cache clean --force
+npm install
+```
+
+#### API接続エラー
+
+- YouTube API Keyが正しく設定されているか確認
+- 環境変数が正しく読み込まれているか確認（`.env.local`ファイルの存在と内容）
+- ブラウザのコンソールでネットワークエラーを確認
+
+#### ビルドエラー
+
+```bash
+# node_modulesを削除して再インストール
+rm -rf node_modules .next
+npm install
+npm run build
+```
+
+#### データベース接続エラー
+
+- `DATABASE_URL`が正しく設定されているか確認
+- データベースが実行中か確認
+- 必要なデータベーススキーマが存在するか確認（マイグレーションを実行）
+
+### ログ確認方法
+
+開発中の問題を診断するには：
+
+1. ブラウザのデベロッパーツール（F12）を開く
+2. コンソールタブでエラーを確認
+3. ネットワークタブでAPIリクエストとレスポンスを確認
+4. サーバーサイドのログを確認（ターミナルに表示）
+
+### サポート
+
+さらに支援が必要な場合は、以下の方法でサポートを受けられます：
+
+- [GitHub Issues](https://github.com/yourusername/tubenavi-app/issues)で問題を報告
+- [Discord コミュニティ](https://discord.gg/your-discord-invite)に参加して質問
+- support@tubenavi.jp にメールで問い合わせ
+
+---
+
+このセットアップガイドが、つべナビの開発および本番環境のセットアップに役立つことを願っています。追加の質問がある場合は、お気軽にサポートチームにお問い合わせください。 
