@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       totalResults: videosResult.totalResults,
       stats: statsResult.success ? statsResult.stats : null,
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { 
         success: false, 
@@ -62,4 +62,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-

@@ -5,9 +5,9 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Settings, LogOut, Menu, X, Youtube, Moon, Sun, HelpCircle, Home, BarChart3, Video, BookOpen } from "lucide-react"
+import { Settings, LogOut, Menu, X, Moon, Sun, HelpCircle, Home, BarChart3, BookOpen } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useToast } from "@/hooks/use-toast"
 
@@ -15,14 +15,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
   const { theme, setTheme } = useTheme()
   const { toast } = useToast()
-  const [iconSrc, setIconSrc] = useState("/assets/branding/icon.png")
+  const iconSrc = "/assets/branding/icon.png"
 
   useEffect(() => {
     setMounted(true)
-    // setIconSrc(`/assets/branding/icon.png?v=${new Date().getTime()}`)
   }, [])
 
   const handleLogout = async () => {
@@ -379,4 +377,3 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </div>
   )
 }
-

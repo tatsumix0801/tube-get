@@ -127,7 +127,7 @@ describe('GET /api/youtube/videos', () => {
       expect(data.videos).toHaveLength(2);
       
       // 報告された問題の動画が含まれているか確認
-      const videoIds = data.videos.map((v: any) => v.id);
+      const videoIds = data.videos.map((v: { id: string }) => v.id);
       expect(videoIds).toContain('x4BBWXihl7U');
       expect(videoIds).toContain('PIe60_9RNVI');
     });

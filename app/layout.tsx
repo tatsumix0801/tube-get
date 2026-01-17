@@ -4,7 +4,6 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { FaviconManager } from "@/components/favicon-manager"
 import Script from "next/script"
 import { AppLayout } from "@/components/app-layout"
 

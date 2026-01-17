@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { HashIcon } from "lucide-react"
 
 interface ChannelTagsProps {

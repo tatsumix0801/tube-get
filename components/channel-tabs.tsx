@@ -6,7 +6,6 @@ import { ChannelInfo, Video } from "@/hooks/use-channel-data"
 import { ChannelOverviewTab } from "./channel-overview-tab"
 import { VideoAnalysisTab } from "./video-analysis-tab"
 import { cn } from "@/lib/utils"
-import { PlaySquare } from "lucide-react"
 
 interface ChannelTabsProps {
   channelInfo: ChannelInfo

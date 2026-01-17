@@ -6,12 +6,10 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
 
 interface ApiErrorHandlerProps {
   errorMessage: string;
   onRetry?: () => void;
-  className?: string;
 }
 
 /**
@@ -214,7 +212,7 @@ function GeneralApiError({ errorMessage, onRetry }: { errorMessage: string; onRe
  * API エラーハンドラーコンポーネント
  * エラーメッセージの内容を解析し、適切なエラー表示を行います
  */
-export function ApiErrorHandler({ errorMessage, onRetry, className }: ApiErrorHandlerProps) {
+export function ApiErrorHandler({ errorMessage, onRetry }: ApiErrorHandlerProps) {
   const [errorType, setErrorType] = useState<'quota' | 'auth' | 'network' | 'validation' | 'general'>('general');
   
   // エラーメッセージからエラータイプを判別

@@ -7,9 +7,7 @@ import type {
   YouTubePlaylistItem, 
   YouTubeVideo, 
   YouTubeApiResponse, 
-  FormattedVideo, 
-  ChannelInfo, 
-  ChannelStats 
+  FormattedVideo 
 } from '@/types/youtube'
 
 // YouTube Data API のエンドポイント
@@ -57,8 +55,15 @@ export async function validateApiKey(apiKey: string) {
   }
 }
 
+type ApiErrorPayload = {
+  error?: {
+    message?: string;
+  };
+  message?: string;
+};
+
 // API リクエスト時のエラーメッセージを日本語化して返す関数
-function translateApiError(error: any): string {
+function translateApiError(error: ApiErrorPayload | null | undefined): string {
   if (!error) return "不明なエラーが発生しました";
   
   // エラーオブジェクトからメッセージを抽出
@@ -177,22 +182,36 @@ export async function getChannelId(channelUrl: string, apiKey: string | null | u
             }
           }
           
-          const searchData = await searchResponse.json()
+          type SearchResultItem = {
+            snippet?: {
+              customUrl?: string;
+              title?: string;
+            };
+            id?: {
+              channelId?: string;
+            };
+          };
+
+          const searchData = await searchResponse.json() as { items?: SearchResultItem[] }
           if (searchData.items && searchData.items.length > 0) {
             // チャンネル名の完全一致をチェック
             const exactMatch = searchData.items.find(
-              (item: any) => item.snippet.customUrl === handleName || 
-                            item.snippet.title === decodeURIComponent(handleName)
+              (item) =>
+                item.snippet?.customUrl === handleName ||
+                item.snippet?.title === decodeURIComponent(handleName)
             )
             
-            if (exactMatch) {
+            if (exactMatch?.id?.channelId) {
               channelId = exactMatch.id.channelId
               return { success: true, channelId }
             }
             
             // 完全一致がない場合は最初の結果を使用
-            channelId = searchData.items[0].id.channelId
-            return { success: true, channelId }
+            const fallbackChannelId = searchData.items[0]?.id?.channelId
+            if (fallbackChannelId) {
+              channelId = fallbackChannelId
+              return { success: true, channelId }
+            }
           }
         }
       }
@@ -667,7 +686,7 @@ export async function getChannelVideosComplete(
 export async function getSpecificVideos(
   videoIds: string[],
   apiKey: string
-): Promise<any[]> {
+): Promise<FormattedVideo[]> {
   if (!videoIds || videoIds.length === 0) {
     return [];
   }
@@ -685,7 +704,7 @@ export async function getSpecificVideos(
       throw new Error(translateApiError(error));
     }
     
-    const data = await response.json() as YouTubeApiResponse<YouTubeChannel>;
+    const data = await response.json() as YouTubeApiResponse<YouTubeVideo>;
     
     if (!data.items || data.items.length === 0) {
       console.log("[DEBUG] No videos found for IDs:", videoIds);
@@ -741,7 +760,7 @@ export async function getSpecificVideos(
 }
 
 // 動画の統計情報を計算
-export async function calculateChannelStats(videos: any[]) {
+export async function calculateChannelStats(videos: FormattedVideo[]) {
   try {
     if (!videos || videos.length === 0) {
       return {
@@ -873,4 +892,3 @@ export async function getChannelImageDownloadUrls(channelId: string | null | und
     }
   }
 }
-
