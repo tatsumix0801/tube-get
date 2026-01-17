@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { FileText, ChevronDown, ChevronUp, Copy, Check, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"

@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileSpreadsheet, BarChart, Eye, ThumbsUp, MessageSquare, TrendingUp, Image, Award } from "lucide-react"
+import { FileSpreadsheet, Eye, ThumbsUp, MessageSquare, TrendingUp, Image, Award } from "lucide-react"
 import { VideoTable } from "@/components/video-table"
 import { Video } from "@/hooks/use-channel-data"
 import { formatNumber } from "@/lib/format-utils"
@@ -16,10 +15,9 @@ import { useGoodChannel } from "@/hooks/use-good-channel"
 
 interface VideoAnalysisTabProps {
   videos: Video[]
-  videoTypeLabel?: string
 }
 
-export function VideoAnalysisTab({ videos, videoTypeLabel = "通常動画" }: VideoAnalysisTabProps) {
+export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
   const [activeTab, setActiveTab] = useState("all")
   const [isExporting, setIsExporting] = useState(false)
   const [isExportingThumbnails, setIsExportingThumbnails] = useState(false)
@@ -293,8 +291,6 @@ export function VideoAnalysisTab({ videos, videoTypeLabel = "通常動画" }: Vi
   const avgComments = filteredVideos.length > 0 ? Math.round(totalComments / filteredVideos.length) : 0
 
   // フィルタリングで絞り込まれた動画の割合
-  const filteredPercent = videos.length > 0 ? Math.round((filteredVideos.length / videos.length) * 100) : 0
-  
   // スプレッドレートの計算
   const avgSpreadRate = filteredVideos.length > 0
     ? filteredVideos.reduce((sum, video) => sum + video.spreadRate, 0) / filteredVideos.length

@@ -6,7 +6,7 @@ import '../global-doc-styles.css'
 
 // デバッグ情報の型を定義
 interface DebugInfo {
-  params: any; // paramsの型はnext/navigationのuseParamsの戻り値型
+  params: ReturnType<typeof useParams>;
   slug: string | string[] | null | undefined;
   fetchingSlug?: string | undefined;
   responseStatus?: number;

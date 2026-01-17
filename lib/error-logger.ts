@@ -8,7 +8,7 @@ export interface ErrorLogEntry {
   timestamp: Date;
   message: string;
   stackTrace?: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   severity: 'info' | 'warning' | 'error' | 'critical';
 }
 
@@ -63,7 +63,7 @@ class ErrorLogger {
   }: {
     message: string;
     stackTrace?: string;
-    context?: Record<string, any>;
+    context?: Record<string, unknown>;
     severity?: 'info' | 'warning' | 'error' | 'critical';
   }): void {
     // クライアントサイドで初期化されていなければ初期化
@@ -130,7 +130,7 @@ class ErrorLogger {
 export const errorLogger = ErrorLogger.getInstance();
 
 // エラーログ記録用の便利なヘルパー関数
-export function logError(message: string, error?: Error, context?: Record<string, any>): void {
+export function logError(message: string, error?: Error, context?: Record<string, unknown>): void {
   errorLogger.logError({
     message,
     stackTrace: error?.stack,
@@ -139,7 +139,7 @@ export function logError(message: string, error?: Error, context?: Record<string
   });
 }
 
-export function logWarning(message: string, context?: Record<string, any>): void {
+export function logWarning(message: string, context?: Record<string, unknown>): void {
   errorLogger.logError({
     message,
     context,
@@ -147,7 +147,7 @@ export function logWarning(message: string, context?: Record<string, any>): void
   });
 }
 
-export function logInfo(message: string, context?: Record<string, any>): void {
+export function logInfo(message: string, context?: Record<string, unknown>): void {
   errorLogger.logError({
     message,
     context,
@@ -155,7 +155,7 @@ export function logInfo(message: string, context?: Record<string, any>): void {
   });
 }
 
-export function logCritical(message: string, error?: Error, context?: Record<string, any>): void {
+export function logCritical(message: string, error?: Error, context?: Record<string, unknown>): void {
   errorLogger.logError({
     message,
     stackTrace: error?.stack,

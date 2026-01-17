@@ -3,7 +3,7 @@
  * getChannelVideosComplete関数の動作を検証
  */
 
-import { getChannelVideosComplete, getChannelVideos } from '../youtube-api';
+import { getChannelVideosComplete } from '../youtube-api';
 
 // fetchのモック
 global.fetch = jest.fn();

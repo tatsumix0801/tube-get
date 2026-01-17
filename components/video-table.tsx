@@ -14,11 +14,8 @@ import {
   MessageSquare,
   ThumbsUp,
   Eye,
-  Tags,
   LayoutList,
   LayoutGrid,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ja } from "date-fns/locale"
@@ -26,7 +23,6 @@ import { formatNumber } from "@/lib/format-utils"
 import { VideoTags } from "@/components/video-tags"
 import { DisplaySettings } from "@/components/display-settings"
 import { loadSettings } from "@/lib/user-settings"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { DescriptionAccordion } from "@/components/description-accordion"
 
@@ -109,18 +105,19 @@ export function VideoTable({ videos }: VideoTableProps) {
   const sortedVideos = [...videos].sort((a, b) => {
     if (!sortField) return 0
 
-    let valueA: any = a[sortField]
-    let valueB: any = b[sortField]
-
-    // タグ配列やnullの場合の処理
-    if (valueA === undefined) valueA = ""
-    if (valueB === undefined) valueB = ""
-
-    // 数値に変換（文字列の場合）
-    if (typeof valueA === "string" && !isNaN(Number(valueA.replace(/,/g, "")))) {
-      valueA = Number(valueA.replace(/,/g, ""))
-      valueB = Number((valueB as string).replace(/,/g, ""))
+    const normalizeValue = (value: Video[keyof Video] | undefined): string | number => {
+      if (value === undefined) return ""
+      if (typeof value === "number") return value
+      if (Array.isArray(value)) return value.join(",")
+      if (typeof value === "string") {
+        const numericValue = Number(value.replace(/,/g, ""))
+        return Number.isNaN(numericValue) ? value : numericValue
+      }
+      return ""
     }
+
+    const valueA = normalizeValue(a[sortField])
+    const valueB = normalizeValue(b[sortField])
 
     if (valueA < valueB) return sortDirection === "asc" ? -1 : 1
     if (valueA > valueB) return sortDirection === "asc" ? 1 : -1
@@ -645,4 +642,3 @@ export function VideoTable({ videos }: VideoTableProps) {
     </div>
   )
 }
-

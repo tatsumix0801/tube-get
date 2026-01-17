@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,7 +14,6 @@ export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("")
   const [showApiKey, setShowApiKey] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
   const { toast } = useToast()
 
   // 保存済みのAPI Keyがあれば取得
@@ -194,4 +192,3 @@ export default function SettingsPage() {
     </div>
   )
 }
-

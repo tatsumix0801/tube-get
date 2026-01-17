@@ -1,9 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Check, ChevronsUpDown, FileSpreadsheet, Settings } from "lucide-react"
+import { ChevronsUpDown, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"

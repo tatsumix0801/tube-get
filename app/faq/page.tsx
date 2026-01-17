@@ -1,10 +1,9 @@
 "use client"
 
 import * as React from 'react'
-import { useState } from 'react'
 import { HelpCircle, User, Workflow, Bug, ShieldAlert, Headphones, Clock } from 'lucide-react'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 
 type FAQItem = {
   question: string;

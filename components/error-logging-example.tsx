@@ -46,7 +46,7 @@ const ErrorLoggingExample = () => {
 
     // エラーログ
     try {
-      const obj = {} as any;
+      const obj = {} as { nonExistentMethod: () => void };
       // 意図的にエラーを発生させる
       obj.nonExistentMethod();
     } catch (error) {
