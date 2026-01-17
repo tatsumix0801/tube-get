@@ -4,10 +4,10 @@
 
 ## 📌 プロジェクト概要
 
-**プロジェクト名**: つべナビ（tube-navi）  
-**概要**: YouTubeチャンネル情報取得と基本分析を提供するWebアプリケーション  
-**開発形態**: 個人開発  
-**リポジトリ**: https://github.com/tatsumix0801/tube-navi
+**プロジェクト名**: tube-get（旧: つべナビ / tube-navi）
+**概要**: YouTubeチャンネル情報取得と基本分析を提供するWebアプリケーション
+**開発形態**: 個人開発
+**リポジトリ**: https://github.com/tatsumix0801/tube-get
 
 ### 主要機能
 - YouTubeチャンネル基本情報の取得と表示
@@ -19,12 +19,13 @@
 
 ## 🛠 技術スタック
 
-- **フレームワーク**: Next.js 14（App Router）
+- **フレームワーク**: Next.js 15.1.0（App Router）
 - **言語**: TypeScript
 - **スタイリング**: Tailwind CSS
 - **UIコンポーネント**: Radix UI, shadcn/ui
 - **状態管理**: React Context API
 - **デプロイ**: Vercel
+- **注意**: Next.js 15.1.0 には脆弱性 (CVE-2025-66478) あり、要対応
 
 ## 🌿 Git-flowブランチ戦略
 
@@ -162,8 +163,27 @@ npm run lint   # コード品質チェック
 - developブランチから作業を開始
 - Conventional Commitsに従ったメッセージを使用
 - ドキュメント更新時は関連ファイルも同時に更新
-- プロジェクト名は必ず「tube-navi」で統一
+- プロジェクト名は必ず「tube-get」で統一（旧名: tube-navi）
 
 ---
 
-最終更新: 2025年1月23日（YouTube動画取得問題対応、デプロイ環境情報追加）
+## 📜 作業履歴
+
+### 2026-01-17: tube-navi から tube-get へのリポジトリ移行
+- **作業内容**: リポジトリクローン、package.json name変更、GitHub/Vercelデプロイ、ESLintエラー修正、Git-flow導入
+- **成果**:
+  - 新規リポジトリ: https://github.com/tatsumix0801/tube-get
+  - Vercelデプロイ: https://tube-nymum0tcp-motokis-projects-d68fcfef.vercel.app
+  - ESLintエラー: 50件以上 → 0件
+  - Git-flow: develop/main ブランチ分離
+- **ツール活用**: codex CLI (ESLint修正), gh CLI (リポジトリ作成), vercel CLI (デプロイ)
+- **次回タスク**:
+  1. Next.js最新版アップデート (CVE-2025-66478対応)
+  2. npm audit fix (脆弱性9件)
+  3. ESLint警告対応 (画像alt、next/image)
+  4. Vercel環境変数設定 (YOUTUBE_API_KEY)
+- **詳細**: `.claude_workflow/complete.md` 参照
+
+---
+
+最終更新: 2026-01-18（tube-get移行完了、作業履歴追加）
