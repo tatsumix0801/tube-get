@@ -63,18 +63,19 @@
   - [x] 特定商取引法ページ
   - [x] YouTube Data APIキー取得方法ガイド
   - [x] よくある質問（FAQ）ページ
-- [ ] 開発者向けガイド
-  - [ ] コーディング規約
-  - [ ] アーキテクチャ説明書
-  - [ ] 貢献ガイドライン
+- [x] 開発者向けガイド
+  - [x] コーディング規約（CODING_STANDARDS.md）
+  - [x] アーキテクチャ説明書（ARCHITECTURE.md）
+  - [x] 貢献ガイドライン（CONTRIBUTING.md）
+  - [x] 環境設定（ENVIRONMENTS.md）
 
 ## 🔄 デプロイ・CI/CD
 
-- [ ] CI/CDパイプライン構築
-- [ ] ステージング環境設定
-- [ ] 本番環境デプロイ手順作成
-- [ ] 自動バックアップ仕組み構築
-- [ ] 障害復旧手順のドキュメント化
+- [x] CI/CDパイプライン構築（GitHub Actions設定完了）
+- [x] ステージング環境設定（Vercel Preview Deployments活用）
+- [x] 本番環境デプロイ手順作成（DEPLOYMENT.md）
+- [ ] 自動バックアップ仕組み構築（GitHubで十分のためスコープ外）
+- [x] 障害復旧手順のドキュメント化（DISASTER_RECOVERY.md）
 
 ## 📱 マーケティング・エンゲージメント
 
