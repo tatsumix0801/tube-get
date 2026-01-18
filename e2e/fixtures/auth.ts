@@ -23,12 +23,12 @@ async function login(page: Page) {
  * 認証済みページへのアクセスを提供するフィクスチャ
  */
 export const test = base.extend({
-  page: async ({ page }, use) => {
+  page: async function Page({ page }, run) {
     // ログイン処理
     await login(page)
 
     // テストでページを使用
-    await use(page)
+    await run(page)
   },
 })
 

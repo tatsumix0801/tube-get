@@ -1,7 +1,7 @@
 let userConfig = undefined
 try {
   userConfig = await import('./v0-user-next.config')
-} catch (e) {
+} catch {
   // ignore error
 }
 
@@ -33,7 +33,7 @@ const nextConfig = {
     parallelServerCompiles: true,
   },
   transpilePackages: ['framer-motion'],
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     // case-sensitive filesystem issue fix
     if (process.platform === 'win32' || process.platform === 'darwin') {
       config.module.rules.push({

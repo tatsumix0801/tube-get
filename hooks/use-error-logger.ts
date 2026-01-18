@@ -7,30 +7,30 @@ import { errorLogger, logError, logWarning, logInfo, logCritical } from '@/lib/e
  */
 export const useErrorLogger = () => {
   // エラーの記録
-  const logComponentError = useCallback((message: string, error: Error, context?: Record<string, any>) => {
+  const logComponentError = useCallback((message: string, error: Error, context?: Record<string, unknown>) => {
     logError(message, error, { ...context, source: 'component' });
   }, []);
 
   // 警告の記録
-  const logComponentWarning = useCallback((message: string, context?: Record<string, any>) => {
+  const logComponentWarning = useCallback((message: string, context?: Record<string, unknown>) => {
     logWarning(message, { ...context, source: 'component' });
   }, []);
 
   // 情報の記録
-  const logComponentInfo = useCallback((message: string, context?: Record<string, any>) => {
+  const logComponentInfo = useCallback((message: string, context?: Record<string, unknown>) => {
     logInfo(message, { ...context, source: 'component' });
   }, []);
 
   // 重大エラーの記録
-  const logComponentCritical = useCallback((message: string, error: Error, context?: Record<string, any>) => {
+  const logComponentCritical = useCallback((message: string, error: Error, context?: Record<string, unknown>) => {
     logCritical(message, error, { ...context, source: 'component' });
   }, []);
 
   // 非同期関数のエラーをキャッチするためのラッパー
-  const withErrorLogging = useCallback(<T extends any[], R>(
+  const withErrorLogging = useCallback(<T extends unknown[], R>(
     fn: (...args: T) => Promise<R>,
     errorMessage: string = 'エラーが発生しました',
-    context?: Record<string, any>
+    context?: Record<string, unknown>
   ) => {
     return async (...args: T): Promise<R> => {
       try {
@@ -43,7 +43,7 @@ export const useErrorLogger = () => {
   }, [logComponentError]);
 
   // APIリクエストのエラーを処理するためのヘルパー
-  const handleApiError = useCallback((error: unknown, endpoint: string, params?: Record<string, any>) => {
+  const handleApiError = useCallback((error: unknown, endpoint: string, params?: Record<string, unknown>) => {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logComponentError(`API呼び出しに失敗しました: ${endpoint}`, 
       error instanceof Error ? error : new Error(errorMessage),

@@ -10,7 +10,7 @@
     "deploy": "vercel --prod",
     "deploy:dev": "vercel --prod --scope tatsumix0801 --project tube-navi-dev",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
@@ -79,6 +79,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
+    "@eslint/eslintrc": "^3.3.3",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@testing-library/jest-dom": "^6.9.1",
