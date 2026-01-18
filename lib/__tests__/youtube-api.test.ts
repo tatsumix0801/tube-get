@@ -3,14 +3,18 @@
  * getChannelVideosComplete関数の動作を検証
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { vi, type Mock } from 'vitest';
 import { getChannelVideosComplete } from '../youtube-api';
 
 // fetchのモック
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 describe('getChannelVideosComplete', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
+    global.fetch = vi.fn();
   });
 
   describe('正常系', () => {
@@ -110,23 +114,23 @@ describe('getChannelVideosComplete', () => {
       };
 
       // fetchモックの設定
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockChannelResponse)
         .mockResolvedValueOnce(mockPlaylistResponse)
         .mockResolvedValueOnce(mockVideosResponse);
 
       // テスト実行
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey');
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {});
 
       // 検証
       expect(result.success).toBe(true);
       expect(result.videos).toHaveLength(2);
-      expect(result.videos[0].id).toBe('PIe60_9RNVI'); // 最新順でソートされているか
-      expect(result.videos[1].id).toBe('x4BBWXihl7U');
+      expect(result.videos![0].id).toBe('PIe60_9RNVI'); // 最新順でソートされているか
+      expect(result.videos![1].id).toBe('x4BBWXihl7U');
       expect(result.method).toBe('playlistItems');
 
       // 報告された問題の動画が含まれているか確認
-      const videoIds = result.videos.map(v => v.id);
+      const videoIds = result.videos!.map(v => v.id);
       expect(videoIds).toContain('x4BBWXihl7U');
       expect(videoIds).toContain('PIe60_9RNVI');
     });
@@ -199,18 +203,18 @@ describe('getChannelVideosComplete', () => {
         })
       };
 
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockChannelResponse)
         .mockResolvedValueOnce(mockPlaylistResponse)
         .mockResolvedValueOnce(mockVideosResponse);
 
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', {
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {
         includeDeleted: false
       });
 
       expect(result.success).toBe(true);
       expect(result.videos).toHaveLength(1);
-      expect(result.videos[0].id).toBe('video1');
+      expect(result.videos![0].id).toBe('video1');
     });
 
     it('最大取得件数を制限できること', async () => {
@@ -269,12 +273,12 @@ describe('getChannelVideosComplete', () => {
         })
       };
 
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockChannelResponse)
         .mockResolvedValueOnce(mockPlaylistResponse)
         .mockResolvedValueOnce(mockVideosResponse);
 
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', {
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {
         maxVideos: 5
       });
 
@@ -309,12 +313,12 @@ describe('getChannelVideosComplete', () => {
         })
       };
 
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockErrorResponse) // チャンネル情報取得失敗
         .mockResolvedValueOnce(mockFallbackResponse) // フォールバック
         .mockResolvedValueOnce(mockFallbackResponse); // フォールバック
 
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey');
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {});
 
       // フォールバックが呼ばれることを確認
       expect(result.success).toBeDefined();
@@ -346,11 +350,11 @@ describe('getChannelVideosComplete', () => {
         })
       };
 
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockChannelResponse)
         .mockResolvedValueOnce(mockErrorResponse);
 
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey');
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {});
 
       // エラーが処理されることを確認
       expect(result.success).toBeDefined();
@@ -371,10 +375,10 @@ describe('getChannelVideosComplete', () => {
         })
       };
 
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockChannelResponse);
 
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey');
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {});
 
       // フォールバックが呼ばれることを確認
       expect(result.success).toBeDefined();
@@ -442,15 +446,20 @@ describe('getChannelVideosComplete', () => {
         })
       };
 
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockChannelResponse)
         .mockResolvedValueOnce(mockPlaylistResponse)
         .mockResolvedValueOnce(mockVideosResponse);
 
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey');
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {});
 
+      if (!result.success) {
+        console.log('[TEST DEBUG] result.message:', result.message);
+      }
       expect(result.success).toBe(true);
-      expect(result.videos[0].duration).toBe('1:23:45');
+      if (result.success) {
+        expect(result.videos![0].duration).toBe('1:23:45');
+      }
     });
 
     it('拡散率が正しく計算されること', async () => {
@@ -513,16 +522,21 @@ describe('getChannelVideosComplete', () => {
         })
       };
 
-      (global.fetch as jest.Mock)
+      (global.fetch as Mock)
         .mockResolvedValueOnce(mockChannelResponse)
         .mockResolvedValueOnce(mockPlaylistResponse)
         .mockResolvedValueOnce(mockVideosResponse);
 
-      const result = await getChannelVideosComplete('testChannelId', 'testApiKey');
+      const result = await getChannelVideosComplete('testChannelId', 'testApiKey', '', {});
 
+      if (!result.success) {
+        console.log('[TEST DEBUG] result.message:', result.message);
+      }
       expect(result.success).toBe(true);
-      // 拡散率 = (5000 / 10000) * 100 = 50%
-      expect(result.videos[0].spreadRate).toBe(50);
+      if (result.success) {
+        // 拡散率 = (5000 / 10000) * 100 = 50%
+        expect(result.videos![0].spreadRate).toBe(50);
+      }
     });
   });
 });

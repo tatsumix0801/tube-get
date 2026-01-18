@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     // 動画リストを取得（completeモードのみ使用）
     const videosResult = await getChannelVideosComplete(
-      channelIdResult.channelId,
+      channelIdResult.channelId as string,
       apiKey,
       pageToken,
       {
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 統計情報を計算
-    const statsResult = await calculateChannelStats(videosResult.videos)
+    const statsResult = await calculateChannelStats(videosResult.videos!)
 
     return NextResponse.json({
       success: true,

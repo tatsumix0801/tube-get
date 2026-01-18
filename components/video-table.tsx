@@ -25,6 +25,7 @@ import { DisplaySettings } from "@/components/display-settings"
 import { loadSettings } from "@/lib/user-settings"
 import { cn } from "@/lib/utils"
 import { DescriptionAccordion } from "@/components/description-accordion"
+import Image from "next/image"
 
 interface Video {
   id: string
@@ -340,10 +341,11 @@ export function VideoTable({ videos }: VideoTableProps) {
                             }}
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <img
+                            <Image
                               src={video.thumbnail || "/placeholder.svg"}
                               alt={video.title}
-                              className="w-full h-full object-cover rounded-md shadow-sm group-hover:shadow-md transition-all"
+                              fill
+                              className="object-cover rounded-md shadow-sm group-hover:shadow-md transition-all"
                             />
                             <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
                               {video.duration.includes(':') 
@@ -357,9 +359,11 @@ export function VideoTable({ videos }: VideoTableProps) {
                             <DialogTitle className="text-lg">{video.title}</DialogTitle>
                           </DialogHeader>
                           <div className="mt-2 flex flex-col items-center">
-                            <img
+                            <Image
                               src={video.thumbnail || "/placeholder.svg"}
                               alt={video.title}
+                              width={1280}
+                              height={720}
                               className="max-w-full max-h-[70vh] object-contain rounded-md shadow-md"
                             />
                             <Button 
@@ -367,7 +371,7 @@ export function VideoTable({ videos }: VideoTableProps) {
                               className="mt-4 border-purple-200 hover:border-purple-300 hover:bg-purple-50 dark:border-purple-900 dark:hover:border-purple-800 dark:hover:bg-purple-900/20 transition-all"
                               onClick={() => {
                                 // 画像のCORS問題を回避するためにCanvas経由でダウンロード
-                                const image = new Image();
+                                const image = document.createElement('img');
                                 image.crossOrigin = "anonymous";
                                 image.src = video.thumbnail || "/placeholder.svg";
                                 
@@ -528,9 +532,11 @@ export function VideoTable({ videos }: VideoTableProps) {
                           setSelectedThumbnail(video.thumbnail);
                           setSelectedTitle(video.title);
                         }}>
-                          <img
+                          <Image
                             src={video.thumbnail}
                             alt={video.title}
+                            width={160}
+                            height={90}
                             className="w-full md:w-[160px] aspect-video object-cover rounded"
                           />
                           {displaySettings.showDuration && (
@@ -545,9 +551,11 @@ export function VideoTable({ videos }: VideoTableProps) {
                           <DialogTitle>{selectedTitle}</DialogTitle>
                         </DialogHeader>
                         {selectedThumbnail && (
-                          <img
+                          <Image
                             src={selectedThumbnail}
                             alt={selectedTitle}
+                            width={1280}
+                            height={720}
                             className="w-full rounded-md"
                           />
                         )}

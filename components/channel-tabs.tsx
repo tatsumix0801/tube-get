@@ -45,7 +45,7 @@ export function ChannelTabs({ channelInfo, videos, className }: ChannelTabsProps
       </TabsContent>
 
       <TabsContent value="videos" className="mt-0 outline-none">
-        <VideoAnalysisTab videos={videos} videoTypeLabel="すべての動画" />
+        <VideoAnalysisTab videos={videos} />
       </TabsContent>
     </Tabs>
   )

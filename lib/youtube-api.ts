@@ -268,15 +268,15 @@ export async function getChannelInfo(channelId: string, apiKey: string | null | 
     const channel = data.items[0]
     const channelInfo = {
       id: channel.id,
-      title: channel.snippet.title,
-      description: channel.snippet.description,
-      customUrl: channel.snippet.customUrl,
-      publishedAt: channel.snippet.publishedAt,
-      thumbnails: channel.snippet.thumbnails,
-      subscriberCount: formatNumber(channel.statistics.subscriberCount),
-      videoCount: formatNumber(channel.statistics.videoCount),
-      viewCount: formatNumber(channel.statistics.viewCount),
-      country: channel.snippet.country,
+      title: channel.snippet!.title,
+      description: channel.snippet!.description,
+      customUrl: channel.snippet!.customUrl,
+      publishedAt: channel.snippet!.publishedAt,
+      thumbnails: channel.snippet!.thumbnails,
+      subscriberCount: formatNumber(channel.statistics!.subscriberCount),
+      videoCount: formatNumber(channel.statistics!.videoCount),
+      viewCount: formatNumber(channel.statistics!.viewCount),
+      country: channel.snippet!.country,
       banner: channel.brandingSettings?.image?.bannerExternalUrl,
       keywords: channel.brandingSettings?.channel?.keywords?.split('","').map((tag: string) => 
         tag.replace(/^"/, '').replace(/"$/, '')
@@ -318,6 +318,9 @@ export async function getChannelVideosComplete(
   const includeDeleted = options.includeDeleted || false;
   const includeRestricted = options.includeRestricted !== false; // デフォルトtrue（制限付きも含める）
 
+  let allVideos: FormattedVideo[] = [];
+  let apiCallCount = 0;
+
   try {
     logInfo("Complete video fetch started", {
       channelId,
@@ -352,9 +355,8 @@ export async function getChannelVideosComplete(
     }
     
     // 2. playlistItemsエンドポイントで動画リストを取得（1ページ分のみ）
-    let allVideos: FormattedVideo[] = [];
-    let apiCallCount = 0;
-    
+    // allVideos と apiCallCount は関数スコープで既に定義済み
+
     // 1ページ分のみ取得
     const pageSize = Math.min(50, maxVideos);
     const playlistUrl = `${API_BASE_URL}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=${pageSize}${
@@ -397,7 +399,7 @@ export async function getChannelVideosComplete(
       
       // 問題の動画IDが含まれているか確認
       const problemVideoIds = ['x4BBWXihl7U', 'PIe60_9RNVI'];
-      const foundProblemVideos = allVideoIdsInPage.filter(id => problemVideoIds.includes(id));
+      const foundProblemVideos = allVideoIdsInPage.filter((id: string) => problemVideoIds.includes(id));
       if (foundProblemVideos.length > 0) {
         console.log("[DEBUG] ⚠️ Found problem videos in playlistItems:", foundProblemVideos);
       }
@@ -447,8 +449,8 @@ export async function getChannelVideosComplete(
       
       // 4. 削除済み/非公開動画をフィルタリング（条件緩和版）
       console.log("[DEBUG] Filtering videos. Include deleted:", includeDeleted, "Include restricted:", includeRestricted);
-      const excludedVideos: YouTubeVideo[] = [];
-      const restrictedVideos: YouTubeVideo[] = [];
+      const excludedVideos: Array<Record<string, unknown>> = [];
+      const restrictedVideos: Array<Record<string, unknown>> = [];
       
       const validVideos = videoDetails.items.filter((video: YouTubeVideo) => {
         // 問題の動画IDの場合は特別処理
@@ -502,8 +504,8 @@ export async function getChannelVideosComplete(
       
       if (excludedVideos.length > 0) {
         console.log("[DEBUG] ⚠️ Excluded videos:", excludedVideos);
-        const problemExcluded = excludedVideos.filter(v => 
-          ['x4BBWXihl7U', 'PIe60_9RNVI'].includes(v.id)
+        const problemExcluded = excludedVideos.filter(v =>
+          ['x4BBWXihl7U', 'PIe60_9RNVI'].includes(v.id as string)
         );
         if (problemExcluded.length > 0) {
           console.log("[DEBUG] ❌ PROBLEM VIDEOS WERE EXCLUDED:", problemExcluded);
@@ -545,7 +547,7 @@ export async function getChannelVideosComplete(
         }
         
         // Duration変換（既存のコードと同じロジック）
-        let duration = video.contentDetails.duration
+        let duration = video.contentDetails!.duration
           .replace("PT", "")
           .replace(/H/g, ":")
           .replace(/M/g, ":")
@@ -572,7 +574,7 @@ export async function getChannelVideosComplete(
           title: video.snippet.title,
           description: video.snippet.description,
           publishedAt: video.snippet.publishedAt,
-          thumbnail: video.snippet.thumbnails.high.url,
+          thumbnail: video.snippet.thumbnails.high!.url,
           duration: duration,
           viewCount: formatNumber(video.statistics.viewCount || "0"),
           likeCount: formatNumber(video.statistics.likeCount || "0"),
@@ -863,13 +865,13 @@ export async function getChannelImageDownloadUrls(channelId: string | null | und
     const channel = data.items[0]
     
     // 画像URLを取得
-    const thumbnailUrl = channel.snippet.thumbnails.high?.url || 
-                         channel.snippet.thumbnails.medium?.url || 
-                         channel.snippet.thumbnails.default?.url
+    const thumbnailUrl = channel.snippet!.thumbnails.high?.url ||
+                         channel.snippet!.thumbnails.medium?.url ||
+                         channel.snippet!.thumbnails.default?.url
     const bannerUrl = channel.brandingSettings?.image?.bannerExternalUrl
 
     // チャンネル名を取得（ファイル名に使用）
-    const channelTitle = channel.snippet.title.replace(/[\\/:*?"<>|]/g, "_") // 不正なファイル名文字を置換
+    const channelTitle = channel.snippet!.title.replace(/[\\/:*?"<>|]/g, "_") // 不正なファイル名文字を置換
 
     return { 
       success: true, 
