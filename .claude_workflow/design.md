@@ -1,257 +1,501 @@
-# パフォーマンス最適化設計書
+# 設計書 - 開発者向けガイドライン & CI/CDパイプライン構築
 
-## 概要
+## 📌 概要
 
-tube-getアプリケーションのパフォーマンス最適化を4つの領域で実施する設計。
+本設計書は、tube-getプロジェクトの「開発者向けガイドライン作成」と「CI/CDパイプライン構築」の詳細設計を定義する。
 
-## 現状分析
-
-### 1. video-analysis-tab.tsx（401行）- 改善必要
-
-**問題点**:
-- `getFilteredVideos()` が毎レンダリングで再計算される（メモ化なし）
-- 統計データ（totalViews, avgViews, totalLikes, avgLikes, avgComments, avgSpreadRate）が毎レンダリングで再計算
-- `<VideoTable videos={videos} />` に毎回同じ参照が渡されてもVideoTable内部で再計算される
-
-### 2. video-table.tsx（653行）- 改善必要
-
-**問題点**:
-- `sortedVideos` が `[...videos].sort()` で毎レンダリング再計算
-- コンポーネント自体がmemo化されていない
-- サムネイル画像のlazyロードは設定済み（next/image）だが最適化の余地あり
-
-### 3. channel-overview-tab.tsx（85行）- 良好
-
-**良い点**:
-- 既にサブコンポーネントを `React.memo` でメモ化済み
-- 開発時デバッグログ実装済み
-
-### 4. lib/youtube-api.ts（897行）- 改善必要
-
-**問題点**:
-- APIレスポンスのキャッシュ機構なし
-- 同じチャンネルへの重複リクエストが発生する可能性
-- 大量のconsole.log（本番環境でのパフォーマンス影響）
+**参照**: `.claude_workflow/requirements.md`
 
 ---
 
-## 最適化設計
+## 🏗️ CI/CD設計
 
-### Phase 1: コンポーネントのメモ化（高優先度）
+### 1. GitHub Actions ワークフロー設計
 
-#### 1-1. video-analysis-tab.tsx の最適化
+#### 1.1 ci.yml 詳細設計
 
-```typescript
-// Before: 毎レンダリングで再計算
-const filteredVideos = getFilteredVideos()
+**ファイルパス**: `.github/workflows/ci.yml`
 
-// After: useMemoでメモ化
-const filteredVideos = useMemo(() => {
-  if (!videos.length) return []
+```yaml
+name: CI
 
-  const now = new Date()
-  const filterDate = new Date()
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
 
-  switch (activeTab) {
-    case "week":
-      filterDate.setDate(now.getDate() - 7)
-      break
-    // ... その他のケース
-  }
+jobs:
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
 
-  return videos.filter((video) => new Date(video.publishedAt) >= filterDate)
-}, [videos, activeTab])
+  typecheck:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  test:
+    name: Vitest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
 ```
 
-```typescript
-// 統計データの計算をuseMemoで最適化
-const { totalViews, avgViews, totalLikes, avgLikes, totalComments, avgComments, avgSpreadRate } = useMemo(() => {
-  if (!filteredVideos.length) {
-    return { totalViews: 0, avgViews: 0, totalLikes: 0, avgLikes: 0, totalComments: 0, avgComments: 0, avgSpreadRate: 0 }
-  }
+#### 1.2 ワークフロー設計方針
 
-  const totalViews = filteredVideos.reduce(
-    (sum, video) => sum + Number.parseInt(video.viewCount.replace(/,/g, ""), 10),
-    0
-  )
-  // ... 他の計算
+| 項目 | 設計値 | 理由 |
+|------|--------|------|
+| Node.js | v20 LTS | 安定性とNext.js 15互換性 |
+| 並列実行 | lint, typecheck, test | ビルド時間短縮 |
+| build依存 | 全チェック完了後 | 品質ゲート |
+| キャッシュ | npm | CI時間短縮 |
 
-  return { totalViews, avgViews, totalLikes, avgLikes, totalComments, avgComments, avgSpreadRate }
-}, [filteredVideos])
+#### 1.3 トリガー設計
+
+```
+PR作成/更新 → lint + typecheck + test + build
+Push (develop) → 同上 + Vercel Preview Deploy（自動）
+Push (main) → 同上 + Vercel Production Deploy（自動）
 ```
 
-#### 1-2. video-table.tsx の最適化
-
-```typescript
-// Before: 毎レンダリングで再計算
-const sortedVideos = [...videos].sort((a, b) => { ... })
-
-// After: useMemoでメモ化
-const sortedVideos = useMemo(() => {
-  return [...videos].sort((a, b) => {
-    // ソートロジック
-  })
-}, [videos, sortConfig])
-```
-
-```typescript
-// VideoTableコンポーネント自体をmemo化
-export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) {
-  // ...
-})
-```
-
-### Phase 2: 画像の遅延読み込み最適化（中優先度）
-
-#### 2-1. サムネイル画像の最適化
-
-現状: next/Image使用済み（デフォルトでlazy）
-
-追加最適化:
-```typescript
-// video-table.tsx内のサムネイル
-<Image
-  src={video.thumbnail}
-  alt={video.title}
-  width={120}
-  height={68}
-  loading="lazy"
-  placeholder="blur"
-  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQdHx..."
-  className="rounded"
-/>
-```
-
-#### 2-2. Intersection Observerによる仮想スクロール検討
-
-動画数が多い場合（100件以上）、仮想スクロールを検討:
-- react-window または react-virtualized の導入
-- 現時点では50件/ページのため優先度低
-
-### Phase 3: APIレスポンスのキャッシュ（高優先度）
-
-#### 3-1. シンプルなメモリキャッシュの実装
-
-```typescript
-// lib/api-cache.ts
-interface CacheEntry<T> {
-  data: T
-  timestamp: number
-}
-
-const cache = new Map<string, CacheEntry<unknown>>()
-const CACHE_TTL = 5 * 60 * 1000 // 5分
-
-export function getCached<T>(key: string): T | null {
-  const entry = cache.get(key)
-  if (!entry) return null
-
-  if (Date.now() - entry.timestamp > CACHE_TTL) {
-    cache.delete(key)
-    return null
-  }
-
-  return entry.data as T
-}
-
-export function setCache<T>(key: string, data: T): void {
-  cache.set(key, { data, timestamp: Date.now() })
-}
-```
-
-#### 3-2. use-channel-data.tsでのキャッシュ活用
-
-```typescript
-// hooks/use-channel-data.ts
-const fetchChannelData = async (channelUrl: string) => {
-  const cacheKey = `channel:${channelUrl}`
-  const cached = getCached<ChannelData>(cacheKey)
-
-  if (cached) {
-    setChannelInfo(cached.info)
-    setVideos(cached.videos)
-    return
-  }
-
-  // APIフェッチ
-  const result = await fetchFromApi(channelUrl)
-  setCache(cacheKey, result)
-  // ...
-}
-```
-
-### Phase 4: データフェッチング最適化（中優先度）
-
-#### 4-1. 重複リクエスト防止
-
-```typescript
-// lib/request-dedup.ts
-const pendingRequests = new Map<string, Promise<unknown>>()
-
-export async function dedupedFetch<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
-  const pending = pendingRequests.get(key)
-  if (pending) {
-    return pending as Promise<T>
-  }
-
-  const promise = fetcher()
-  pendingRequests.set(key, promise)
-
-  try {
-    const result = await promise
-    return result
-  } finally {
-    pendingRequests.delete(key)
-  }
-}
-```
-
-#### 4-2. console.logの本番環境削除
-
-```typescript
-// lib/logger.ts
-export const debugLog = (...args: unknown[]) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[DEBUG]', ...args)
-  }
-}
-```
-
-youtube-api.tsの全`console.log`を`debugLog`に置換。
+**Note**: Vercelデプロイは既存のGitHub Integration（Vercel側設定）で自動実行されるため、GitHub Actionsからのデプロイは不要。
 
 ---
 
-## 実装タスク一覧
+## 📚 開発者ガイドライン設計
 
-| # | タスク | ファイル | 優先度 |
-|---|--------|---------|-------|
-| 1 | filteredVideosのuseMemo化 | video-analysis-tab.tsx | 高 |
-| 2 | 統計データ計算のuseMemo化 | video-analysis-tab.tsx | 高 |
-| 3 | sortedVideosのuseMemo化 | video-table.tsx | 高 |
-| 4 | VideoTableのReact.memo化 | video-table.tsx | 高 |
-| 5 | APIキャッシュ機構の実装 | lib/api-cache.ts (新規) | 高 |
-| 6 | use-channel-dataでのキャッシュ活用 | hooks/use-channel-data.ts | 高 |
-| 7 | 画像placeholder追加 | video-table.tsx | 中 |
-| 8 | 重複リクエスト防止 | lib/request-dedup.ts (新規) | 中 |
-| 9 | debugLog関数実装とconsole.log置換 | lib/youtube-api.ts | 低 |
+### 2. ドキュメント構成設計
+
+#### 2.1 docs/developer/ ディレクトリ構成
+
+```
+docs/developer/
+├── CODING_STANDARDS.md    # コーディング規約
+├── ARCHITECTURE.md        # アーキテクチャ説明書
+├── ENVIRONMENTS.md        # 環境設定
+├── DEPLOYMENT.md          # デプロイ手順
+└── DISASTER_RECOVERY.md   # 障害復旧手順
+```
+
+### 3. 各ドキュメント詳細設計
+
+#### 3.1 CODING_STANDARDS.md 構成
+
+```markdown
+# コーディング規約
+
+## 1. TypeScript
+### 1.1 型定義ルール
+- `any`使用禁止（ESLintで強制）
+- `interface` vs `type` の使い分け
+- ジェネリクス命名規則
+
+### 1.2 コーディングスタイル
+- async/awaitの使用
+- エラーハンドリングパターン
+- null/undefined処理
+
+## 2. React/Next.js
+### 2.1 コンポーネント規約
+- 関数コンポーネント必須
+- Props型定義必須
+- メモ化ガイドライン
+
+### 2.2 ファイル構成
+- 命名規則（kebab-case）
+- ディレクトリ配置ルール
+
+## 3. Tailwind CSS
+### 3.1 クラス順序
+- レイアウト → サイズ → 色 → その他
+
+### 3.2 カスタムカラー
+- CSS変数使用（shadcn/ui準拠）
+- brand/youtube カラーパレット
+
+## 4. インポート順序
+1. React/Next.js
+2. 外部ライブラリ
+3. 内部コンポーネント（@/components）
+4. 内部ユーティリティ（@/lib）
+5. 型定義（@/types）
+6. スタイル
+
+## 5. ESLint設定解説
+- next/core-web-vitals
+- next/typescript
+- 無視ディレクトリ
+```
+
+#### 3.2 ARCHITECTURE.md 構成
+
+```markdown
+# アーキテクチャ説明書
+
+## 1. システム全体構成
+
+┌─────────────────────────────────────────────────────────┐
+│                      ユーザー                           │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│               Vercel Edge Network                       │
+│                    (CDN)                                │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│               Next.js App Router                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
+│  │   Pages     │  │   API       │  │  Components │    │
+│  │  /login     │  │  /api/auth  │  │  /ui        │    │
+│  │  /dashboard │  │  /api/docs  │  │  /channel-* │    │
+│  │  /channel   │  │  /api/export│  │  /video-*   │    │
+│  └─────────────┘  └─────────────┘  └─────────────┘    │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                  YouTube Data API v3                    │
+│              (ユーザー提供APIキー使用)                   │
+└─────────────────────────────────────────────────────────┘
+
+## 2. Next.js App Router構造
+
+app/
+├── (auth)/           # 認証グループ
+│   ├── login/
+│   └── logout/
+├── (main)/           # メインコンテンツ
+│   ├── dashboard/
+│   ├── channel/
+│   └── settings/
+├── api/              # APIルート
+│   ├── auth/         # 認証API
+│   ├── docs/         # ドキュメント取得
+│   ├── export/       # エクスポート機能
+│   └── youtube/      # YouTube API Proxy
+└── layout.tsx        # ルートレイアウト
+
+## 3. データフロー
+
+### 3.1 チャンネルデータ取得フロー
+1. ユーザーがチャンネルURL入力
+2. use-channel-data.ts がAPIキャッシュ確認
+3. キャッシュミス時、YouTube Data API呼び出し
+4. レスポンスをキャッシュに保存（TTL: 5分）
+5. Reactコンポーネントに状態反映
+
+### 3.2 認証フロー
+1. ユーザーがパスワード入力（/login）
+2. /api/auth にPOST
+3. lib/auth.ts でパスワード検証
+4. セッションCookie設定（24時間有効）
+5. middleware.tsでルート保護
+
+## 4. lib/ モジュール構成
+
+lib/
+├── auth.ts           # 認証ロジック
+├── youtube-api.ts    # YouTube API クライアント
+├── api-cache.ts      # APIレスポンスキャッシュ
+├── request-dedup.ts  # リクエスト重複排除
+├── utils.ts          # ユーティリティ関数
+├── format-utils.ts   # フォーマット関数
+├── logger.ts         # ロギング
+└── pdf-generator.ts  # PDF生成
+
+## 5. コンポーネント関係図
+
+components/
+├── ui/                    # shadcn/ui ベースコンポーネント
+│   ├── button.tsx
+│   ├── card.tsx
+│   └── ...
+├── channel-profile/       # チャンネル表示
+│   ├── ProfileHeader.tsx
+│   ├── ProfileActions.tsx
+│   └── ProfileMetrics.tsx
+├── channel-details/       # チャンネル詳細
+│   ├── DetailsStats.tsx
+│   └── DetailsTagCloud.tsx
+├── video-table.tsx        # 動画テーブル（メモ化）
+├── video-analysis-tab.tsx # 動画分析タブ
+└── app-layout.tsx         # アプリレイアウト
+```
+
+#### 3.3 ENVIRONMENTS.md 構成
+
+```markdown
+# 環境設定
+
+## 1. 環境一覧
+
+| 環境 | URL | ブランチ | 用途 |
+|------|-----|---------|------|
+| 本番 | https://tube-get-red.vercel.app | main | 公開環境 |
+| ステージング | *.vercel.app (Preview) | develop, feature/* | 確認環境 |
+| ローカル | http://localhost:3000 | - | 開発環境 |
+
+## 2. 環境変数
+
+### 本番/ステージング（Vercel）
+- 環境変数設定不要（YOUTUBE_API_KEYはユーザー入力式）
+
+### ローカル開発
+.env.local（gitignore対象）:
+```
+# 開発用設定（任意）
+NODE_ENV=development
+```
+
+## 3. Vercel Preview Deployments
+
+### 自動デプロイトリガー
+- develop/feature/* へのプッシュ → Preview Deploy
+- main へのプッシュ → Production Deploy
+
+### Preview URL形式
+`tube-get-<hash>-<team>.vercel.app`
+```
+
+#### 3.4 DEPLOYMENT.md 構成
+
+```markdown
+# デプロイ手順
+
+## 1. 通常リリースフロー
+
+### Step 1: developで開発
+git checkout develop
+# 作業...
+git add .
+git commit -m "feat: 新機能"
+git push origin develop
+
+### Step 2: Preview確認
+- Vercel Previewデプロイ自動実行
+- Preview URLで動作確認
+
+### Step 3: mainへマージ
+git checkout main
+git pull origin main
+git merge --no-ff develop
+git push origin main
+
+### Step 4: 本番確認
+- Vercel Production自動デプロイ
+- 本番URLで動作確認
+
+## 2. Hotfixフロー
+
+### Step 1: mainから分岐
+git checkout main
+git checkout -b hotfix/YYYYMMDD-修正内容
+
+### Step 2: 修正とマージ
+# 修正...
+git checkout main
+git merge --no-ff hotfix/YYYYMMDD-修正内容
+git tag -a vX.X.X -m "Hotfix"
+git push origin main --tags
+
+### Step 3: developにも反映
+git checkout develop
+git merge --no-ff main
+git push origin develop
+
+## 3. ロールバック手順
+
+### Vercelダッシュボードから
+1. https://vercel.com/dashboard
+2. tube-get プロジェクト選択
+3. Deployments タブ
+4. 正常だったデプロイを選択
+5. "..." → "Promote to Production"
+```
+
+#### 3.5 DISASTER_RECOVERY.md 構成
+
+```markdown
+# 障害復旧手順
+
+## 1. よくある障害パターン
+
+### パターンA: ビルド失敗
+**症状**: Vercelデプロイが失敗
+**対処**:
+1. Vercel → Deployments → 失敗デプロイのログ確認
+2. エラー原因特定（型エラー、依存関係など）
+3. ローカルで `npm run build` 実行して再現
+4. 修正してプッシュ
+
+### パターンB: ランタイムエラー
+**症状**: 本番で500エラー
+**対処**:
+1. Vercel → Functions → ログ確認
+2. 問題のAPIルート特定
+3. ローカルで再現確認
+4. 修正 or ロールバック
+
+### パターンC: 認証エラー
+**症状**: ログインできない
+**対処**:
+1. lib/auth.ts のCookie設定確認
+2. NODE_ENV環境確認
+3. secure フラグ設定確認
+
+## 2. 復旧優先順位
+
+1. **最優先**: ロールバックで即座復旧
+2. **高**: Hotfixブランチで修正
+3. **中**: 調査してから対応
+
+## 3. 連絡先・エスカレーション
+
+- Vercel Status: https://www.vercel-status.com/
+- GitHub Status: https://www.githubstatus.com/
+```
+
+### 4. CONTRIBUTING.md 構成
+
+**ファイルパス**: `/CONTRIBUTING.md`（ルート）
+
+```markdown
+# 貢献ガイドライン
+
+## 1. 開発環境セットアップ
+
+### 必要条件
+- Node.js 20.x
+- npm 10.x
+
+### セットアップ手順
+git clone https://github.com/tatsumix0801/tube-get.git
+cd tube-get
+npm install
+npm run dev
+
+## 2. ブランチ戦略
+
+→ 詳細は GIT-FLOW.md 参照
+
+### 基本ルール
+- mainへの直接コミット禁止
+- developから作業開始
+- feature/YYYYMMDD-機能名 で分岐
+
+## 3. コミットメッセージ
+
+### Conventional Commits形式
+feat: 新機能
+fix: バグ修正
+docs: ドキュメント
+style: フォーマット
+refactor: リファクタリング
+test: テスト
+chore: その他
+
+### 例
+feat: 動画フィルター機能を追加
+fix: ログインエラーを修正
+docs: READMEを更新
+
+## 4. コードレビューチェックリスト
+
+- [ ] TypeScript型エラーなし
+- [ ] ESLintエラーなし
+- [ ] テスト追加/更新
+- [ ] ビルド成功
+
+## 5. リリースプロセス
+
+1. develop → main マージ
+2. Vercel自動デプロイ確認
+3. 本番動作確認
+4. 必要に応じてタグ付け
+```
 
 ---
 
-## 期待される効果
+## 📊 設計サマリー
 
-1. **レンダリング最適化**: 不要な再計算を60-80%削減
-2. **APIコール削減**: キャッシュにより同一チャンネルへの重複リクエスト排除
-3. **メモリ効率**: 大量動画表示時のメモリ使用量安定化
-4. **UX向上**: 画面遷移・タブ切り替え時の体感速度向上
+### 成果物一覧
+
+| # | ファイル | 種別 | 行数目安 |
+|---|----------|------|----------|
+| 1 | `.github/workflows/ci.yml` | YAML | ~60行 |
+| 2 | `docs/developer/CODING_STANDARDS.md` | MD | ~150行 |
+| 3 | `docs/developer/ARCHITECTURE.md` | MD | ~200行 |
+| 4 | `docs/developer/ENVIRONMENTS.md` | MD | ~80行 |
+| 5 | `docs/developer/DEPLOYMENT.md` | MD | ~100行 |
+| 6 | `docs/developer/DISASTER_RECOVERY.md` | MD | ~80行 |
+| 7 | `CONTRIBUTING.md` | MD | ~100行 |
+
+### 依存関係
+
+```
+CONTRIBUTING.md
+    └── GIT-FLOW.md（既存、参照のみ）
+
+docs/developer/ARCHITECTURE.md
+    └── docs/technical/directorystructure.md（既存、参照のみ）
+
+.github/workflows/ci.yml
+    └── package.json scripts（既存）
+```
+
+### CLAUDE.md 更新内容
+
+```markdown
+## 📚 関連ドキュメント（追加）
+
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - 貢献ガイドライン
+- [docs/developer/](./docs/developer/) - 開発者向けドキュメント
+  - [CODING_STANDARDS.md](./docs/developer/CODING_STANDARDS.md) - コーディング規約
+  - [ARCHITECTURE.md](./docs/developer/ARCHITECTURE.md) - アーキテクチャ説明書
+  - [ENVIRONMENTS.md](./docs/developer/ENVIRONMENTS.md) - 環境設定
+  - [DEPLOYMENT.md](./docs/developer/DEPLOYMENT.md) - デプロイ手順
+  - [DISASTER_RECOVERY.md](./docs/developer/DISASTER_RECOVERY.md) - 障害復旧手順
+```
 
 ---
 
-## 注意事項
-
-- React.memoの過剰使用は逆にパフォーマンス低下の原因となるため、実際にボトルネックとなっている箇所のみに適用
-- キャッシュTTLは5分に設定（YouTubeデータの更新頻度を考慮）
-- 本番環境でのconsole.log除去は必須（パフォーマンスとセキュリティ両面）
-
----
-
-作成日: 2026-01-18
+*作成日: 2026-01-18*
+*次フェーズ: /sc:workflow でタスク化*

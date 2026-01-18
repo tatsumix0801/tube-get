@@ -44,13 +44,13 @@ describe('isGoodChannel', () => {
       id: 'test-id',
       title: 'Test Video',
       publishedAt: date.toISOString(),
-      viewCount: 1000,
-      likeCount: 100,
-      commentCount: 10,
+      viewCount: '1000',
+      likeCount: '100',
+      commentCount: '10',
       duration: 'PT10M',
-      thumbnailUrl: 'https://example.com/thumb.jpg',
+      thumbnail: 'https://example.com/thumb.jpg',
+      url: 'https://youtube.com/watch?v=test-id',
       spreadRate,
-      likeRate: 10,
     }
   }
 

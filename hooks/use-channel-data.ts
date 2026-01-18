@@ -6,13 +6,27 @@ import { getCached, setCache, CacheKeys } from "@/lib/api-cache"
 import { debugLog } from "@/lib/logger"
 
 // 型定義
+interface Thumbnail {
+  url: string
+  width?: number
+  height?: number
+}
+
+interface Thumbnails {
+  default: Thumbnail
+  medium?: Thumbnail
+  high?: Thumbnail
+  standard?: Thumbnail
+  maxres?: Thumbnail
+}
+
 export interface ChannelInfo {
   id: string
   title: string
   description: string
   customUrl: string
   publishedAt: string
-  thumbnails: unknown
+  thumbnails: Thumbnails
   subscriberCount: string
   videoCount: string
   viewCount: string

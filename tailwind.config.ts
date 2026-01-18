@@ -1,6 +1,5 @@
 import type { Config } from "tailwindcss"
 import tailwindcssAnimate from "tailwindcss-animate"
-import lineClamp from "@tailwindcss/line-clamp"
 
 const config = {
   darkMode: ["class"],
@@ -113,7 +112,6 @@ const config = {
   },
   plugins: [
     tailwindcssAnimate,
-    lineClamp
   ],
 } satisfies Config
 

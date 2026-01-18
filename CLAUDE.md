@@ -155,8 +155,20 @@ npm run lint   # コード品質チェック
 
 ## 📚 関連ドキュメント
 
+### プロジェクト概要
 - [README.md](./README.md) - プロジェクト概要
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - 貢献ガイドライン
 - [GIT-FLOW.md](./GIT-FLOW.md) - Git-flow詳細
+
+### 開発者向けドキュメント
+- [docs/developer/](./docs/developer/) - 開発者向けドキュメント
+  - [CODING_STANDARDS.md](./docs/developer/CODING_STANDARDS.md) - コーディング規約
+  - [ARCHITECTURE.md](./docs/developer/ARCHITECTURE.md) - アーキテクチャ説明書
+  - [ENVIRONMENTS.md](./docs/developer/ENVIRONMENTS.md) - 環境設定
+  - [DEPLOYMENT.md](./docs/developer/DEPLOYMENT.md) - デプロイ手順
+  - [DISASTER_RECOVERY.md](./docs/developer/DISASTER_RECOVERY.md) - 障害復旧手順
+
+### 技術ドキュメント
 - [docs/technical/](./docs/technical/) - 技術ドキュメント詳細
 
 ## 💡 AIアシスタント向けガイドライン
