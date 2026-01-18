@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, memo } from "react"
+import { useState, useEffect, useMemo, memo, useRef, useCallback } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -64,6 +64,7 @@ export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) 
     showDescription: true,
     showThumbnails: true,
   })
+  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([])
 
   // 設定の読み込み
   useEffect(() => {
@@ -137,6 +138,35 @@ export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) 
       <ArrowDown className="ml-1 h-4 w-4 text-purple-500" />
     )
   }
+
+  // フォーカス管理関数
+  const focusRow = useCallback((index: number) => {
+    if (index >= 0 && index < sortedVideos.length && rowRefs.current[index]) {
+      rowRefs.current[index]?.focus()
+    }
+  }, [sortedVideos.length])
+
+  // キーボードナビゲーション
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, index: number) => {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        focusRow(index + 1)
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        focusRow(index - 1)
+        break
+      case 'Home':
+        e.preventDefault()
+        focusRow(0)
+        break
+      case 'End':
+        e.preventDefault()
+        focusRow(sortedVideos.length - 1)
+        break
+    }
+  }, [focusRow, sortedVideos.length])
 
   if (videos.length === 0) {
     return (
@@ -311,7 +341,15 @@ export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) 
             </TableHeader>
             <TableBody>
               {sortedVideos.map((video, index) => (
-                <TableRow key={`${video.id}-${index}`} className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+                <TableRow
+                  key={`${video.id}-${index}`}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-purple-50 dark:focus:bg-purple-900/20"
+                  tabIndex={0}
+                  ref={(el) => { rowRefs.current[index] = el }}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  role="row"
+                  aria-rowindex={index + 1}
+                >
                   <TableCell className="font-medium">
                     {new Date(video.publishedAt).toLocaleDateString("ja-JP", {
                       year: "numeric",
@@ -353,7 +391,7 @@ export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) 
                               placeholder="blur"
                               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUG/8QAIRAAAgICAQQDAAAAAAAAAAAAAQIDBAAFESExQVFhcYH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AzOra+e3J6VWtFcmjiMzxo/CqvHOCfoHIwwH/2Q=="
                             />
-                            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+                            <div className="absolute bottom-2 right-2 bg-black/85 text-white text-xs px-1 py-0.5 rounded">
                               {video.duration.includes(':') 
                                 ? video.duration.replace(/(\d+):(\d)$/, '$1:0$2') 
                                 : `00:${video.duration.padStart(2, '0')}`}
@@ -550,7 +588,7 @@ export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) 
                             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUG/8QAIRAAAgICAQQDAAAAAAAAAAAAAQIDBAAFESExQVFhcYH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AzOra+e3J6VWtFcmjiMzxo/CqvHOCfoHIwwH/2Q=="
                           />
                           {displaySettings.showDuration && (
-                            <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded">
+                            <div className="absolute bottom-1 right-1 bg-black/85 text-white text-xs px-1 rounded">
                               {video.duration}
                             </div>
                           )}

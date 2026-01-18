@@ -135,6 +135,7 @@ export default function SettingsPage() {
                       size="icon"
                       onClick={() => setShowApiKey(!showApiKey)}
                       className="ml-2 h-12 w-12 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      aria-label={showApiKey ? "API Keyを非表示" : "API Keyを表示"}
                     >
                       {showApiKey ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </Button>

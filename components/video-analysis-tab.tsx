@@ -330,7 +330,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
       
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-          <TabsList>
+          <TabsList aria-label="期間フィルター">
             <TabsTrigger value="all">全期間</TabsTrigger>
             <TabsTrigger value="week">1週間</TabsTrigger>
             <TabsTrigger value="month">1ヶ月</TabsTrigger>
