@@ -232,9 +232,19 @@ npm run lint   # コード品質チェック
     - 修正: outputFileTracingRoot削除、Cookie secureフラグ環境対応
     - 検証: curlでHTTP 200 OK、Cookie Secureフラグ確認
     - コミット: develop (b6af278), main (3b5654b)
-- **全27タスク完了** (進捗率100%)
+  - **夕方最終セッション (16:08-16:21)**:
+    - next lint → ESLint CLI移行（Next.js 16対応）:
+      - @next/codemod実行、ESLint Flat Config化
+      - @eslint/eslintrc + FlatCompat導入
+      - codex CLIでESLintエラー57件 → 0件修正
+    - ユニットテスト追加（19件 → 53件）:
+      - lib/__tests__/utils.test.ts: cn(), isGoodChannel()
+      - lib/__tests__/format-utils.test.ts: formatNumber()
+      - lib/__tests__/api-cache.test.ts: キャッシュ機構全般
+    - コミット: develop (4ae6708, d845333), main (5f22770)
+- **全29タスク完了** (進捗率100%)
 - **詳細**: `.claude_workflow/tasks.md` 参照
 
 ---
 
-最終更新: 2026-01-18（Vercel本番ログイン機能完全復旧・セキュリティ完全解消・パフォーマンス最適化全完了・アクセシビリティWCAG 2.1 AA準拠・E2Eテスト導入完了）
+最終更新: 2026-01-18（ESLint CLI移行・ユニットテスト53件達成・Next.js 16対応準備完了）
