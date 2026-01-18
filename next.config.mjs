@@ -27,7 +27,6 @@ const nextConfig = {
       },
     ],
   },
-  outputFileTracingRoot: '/home/motoki/workspace/20_services/tube-get',
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
