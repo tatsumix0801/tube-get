@@ -53,7 +53,7 @@ const navItems = [
       {
         title: "よくある質問",
         href: "/faq",
-        description: "つべナビの使い方に関するFAQ",
+        description: "TubeVisionの使い方に関するFAQ",
       },
     ],
   },

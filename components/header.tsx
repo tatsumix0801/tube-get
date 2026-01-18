@@ -10,7 +10,7 @@ export function Header() {
   const iconSrc = "/assets/branding/icon.png"
 
   return (
-    <header className="bg-background border-b border-border shadow-sm">
+    <header className="bg-background border-b border-border shadow-sm dark:bg-sf-bg-secondary dark:border-sf-cyan/20">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center">
           <Link 
@@ -18,16 +18,16 @@ export function Header() {
             className="flex items-center space-x-3 group hover-scale"
           >
             <div className="relative h-8 w-8 brand-shadow rounded-lg overflow-hidden">
-              <Image 
+              <Image
                 src={iconSrc}
-                alt="つべナビ" 
-                width={32} 
+                alt="TubeVision"
+                width={32}
                 height={32}
                 className="hover-bright"
               />
             </div>
             <span className="text-xl font-montserrat font-bold text-primary">
-              つべナビ
+              TubeVision
             </span>
           </Link>
           

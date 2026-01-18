@@ -24,6 +24,26 @@
     --input: 240 5.9% 90%;
     --ring: 270 50% 55%;
     --radius: 0.5rem;
+
+    /* SF風カラーパレット */
+    --sf-bg-primary: 240 10% 4%;      /* #0a0a0f */
+    --sf-bg-secondary: 215 28% 7%;    /* #0d1117 */
+    --sf-bg-tertiary: 215 21% 11%;    /* #161b22 */
+
+    --sf-text-primary: 0 0% 100%;
+    --sf-text-secondary: 210 14% 83%;
+    --sf-text-muted: 212 12% 58%;
+
+    --sf-cyan: 180 100% 50%;           /* #00ffff */
+    --sf-cyan-dark: 180 100% 40%;      /* #00cccc */
+    --sf-magenta: 300 100% 50%;        /* #ff00ff */
+    --sf-green: 150 100% 50%;          /* #00ff88 */
+    --sf-orange: 25 100% 50%;          /* #ff6b00 */
+    --sf-purple: 263 100% 63%;         /* #9945ff */
+
+    --neon-pink: 306 100% 53%;         /* #FF10F0 */
+    --neon-blue: 191 100% 50%;         /* #00D4FF */
+    --neon-green: 108 100% 54%;        /* #39FF14 */
   }
 
   .dark {
@@ -141,5 +161,247 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+/* SF風アニメーション */
+@keyframes sf-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes sf-glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-1px, 1px); }
+  40% { transform: translate(-1px, -1px); }
+  60% { transform: translate(1px, 1px); }
+  80% { transform: translate(1px, -1px); }
+}
+
+@keyframes holo-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes neon-pulse {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.8; filter: brightness(1.2); }
+}
+
+@keyframes sf-grid-move {
+  0% { background-position: -1px -1px; }
+  100% { background-position: 49px 49px; }
+}
+
+@layer components {
+  /* グローエフェクト */
+  .sf-glow {
+    box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.3),
+      inset 0 0 10px rgba(0, 255, 255, 0.1);
+  }
+
+  .sf-glow-intense {
+    box-shadow:
+      0 0 30px rgba(0, 255, 255, 0.5),
+      0 0 60px rgba(0, 255, 255, 0.3),
+      inset 0 0 15px rgba(0, 255, 255, 0.2);
+  }
+
+  .sf-text-glow {
+    text-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor;
+  }
+
+  /* グラスモーフィズム */
+  .sf-glass {
+    background: rgba(13, 17, 23, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+  }
+
+  .sf-glass-dark {
+    background: rgba(10, 10, 15, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+  }
+
+  /* 背景グリッド */
+  .sf-grid-bg {
+    background-image:
+      linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* ホログラフィックカード */
+  .holographic-card {
+    position: relative;
+    background: rgba(13, 17, 23, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .holographic-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      45deg,
+      #FF10F0,
+      #00D4FF,
+      #39FF14,
+      #00D4FF,
+      #FF10F0
+    );
+    background-size: 300% 300%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: holo-shift 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* ネオンボタン */
+  .neon-button {
+    position: relative;
+    background: transparent;
+    border: 2px solid hsl(var(--sf-cyan));
+    color: hsl(var(--sf-cyan));
+    transition: all 0.3s ease;
+  }
+
+  .neon-button:hover {
+    background: hsl(var(--sf-cyan) / 0.1);
+    box-shadow:
+      0 0 20px hsl(var(--sf-cyan) / 0.5),
+      inset 0 0 10px hsl(var(--sf-cyan) / 0.2);
+  }
+
+  /* Card用スタイル */
+  .card-sf {
+    @apply dark:bg-sf-bg-tertiary/80 dark:border-sf-cyan/20 dark:backdrop-blur-sm;
+  }
+
+  .card-sf-glow {
+    @apply card-sf dark:shadow-sf-glow;
+  }
+
+  .card-holographic {
+    @apply holographic-card;
+  }
+
+  /* Button用スタイル */
+  .btn-neon {
+    @apply neon-button rounded-md px-4 py-2 font-medium;
+  }
+
+  .btn-neon-pink {
+    @apply btn-neon border-neon-pink text-neon-pink hover:bg-neon-pink/10 hover:shadow-neon-glow-pink;
+  }
+
+  .btn-neon-blue {
+    @apply btn-neon border-neon-blue text-neon-blue hover:bg-neon-blue/10 hover:shadow-neon-glow-blue;
+  }
+}
+
+@layer utilities {
+  /* SF風アニメーション */
+  .animate-sf-pulse {
+    animation: sf-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-sf-glitch {
+    animation: sf-glitch 0.3s ease-in-out infinite;
+  }
+
+  .animate-holo-shift {
+    animation: holo-shift 3s ease-in-out infinite;
+  }
+
+  .animate-neon-pulse {
+    animation: neon-pulse 2s ease-in-out infinite;
+  }
+
+  /* ネオンテキスト */
+  .neon-text {
+    text-shadow:
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor;
+  }
+
+  /* カード3D効果 */
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease-out;
+  }
+
+  .card-3d:hover {
+    transform: perspective(1000px) rotateY(5deg) rotateX(-5deg);
+  }
+}
+
+/* モーション軽減（アクセシビリティ） */
+@media (prefers-reduced-motion: reduce) {
+  .animate-sf-pulse,
+  .animate-sf-glitch,
+  .animate-holo-shift,
+  .animate-neon-pulse {
+    animation: none;
+  }
+
+  .sf-grid-bg {
+    animation: none;
+  }
+
+  .holographic-card::before {
+    animation: none;
+  }
+}
+
+/* 小画面でのグロー効果軽減 */
+@media (max-width: 640px) {
+  .sf-glow,
+  .sf-glow-intense {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+
+  .card-3d:hover {
+    transform: none;
+  }
+
+  .neon-text {
+    text-shadow: 0 0 5px currentColor;
+  }
+}
+
+/* SF風カスタムスクロールバー */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--sf-bg-secondary));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--sf-cyan));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--sf-cyan-dark));
+}
+
+/* SF風フォーカススタイル */
+*:focus-visible {
+  outline: 2px solid hsl(var(--sf-cyan));
+  outline-offset: 2px;
 }
 

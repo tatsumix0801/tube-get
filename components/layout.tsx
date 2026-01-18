@@ -99,14 +99,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div className="relative w-10 h-10 overflow-hidden rounded-lg shadow-md">
                 <Image 
                   src={iconSrc}
-                  alt="つべナビ" 
+                  alt="TubeVision" 
                   width={40} 
                   height={40}
                   className="hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <span className="font-bold text-lg bg-gradient-to-r from-brand-pink to-brand-blue text-transparent bg-clip-text font-montserrat">
-                つべナビ
+                TubeVision
               </span>
             </Link>
           </div>
@@ -356,7 +356,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="relative w-6 h-6 overflow-hidden rounded-md">
               <Image 
                 src={iconSrc}
-                alt="つべナビ" 
+                alt="TubeVision" 
                 width={24} 
                 height={24}
                 className="hover:scale-105 transition-transform duration-300" 
@@ -364,14 +364,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               />
             </div>
             <span className="font-bold text-sm bg-gradient-to-r from-brand-pink to-brand-blue text-transparent bg-clip-text font-montserrat">
-              つべナビ
+              TubeVision
             </span>
           </div>
           <div className="flex justify-center gap-4 text-xs text-muted-foreground mb-2">
             <Link href="/docs/privacy-policy" className="hover:text-foreground transition-colors">プライバシーポリシー</Link>
             <Link href="/docs/terms-of-trade" className="hover:text-foreground transition-colors">特定商取引法に基づく表記</Link>
           </div>
-          <p className="text-sm text-muted-foreground">© 2025 つべナビ</p>
+          <p className="text-sm text-muted-foreground">© 2025 TubeVision</p>
         </div>
       </footer>
     </div>

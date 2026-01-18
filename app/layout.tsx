@@ -10,7 +10,7 @@ import { AppLayout } from "@/components/app-layout"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "つべナビ | YouTube動画分析ツール",
+  title: "TubeVision | YouTube動画分析ツール",
   description: "YouTubeチャンネルおよび動画の分析・インサイト・最適化ツール",
   generator: 'v0.dev',
   // icons: {

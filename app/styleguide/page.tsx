@@ -21,7 +21,7 @@ export default function StyleGuidePage() {
     <div className="container mx-auto py-10 px-4 md:px-6">
       <div className="space-y-6">
         <div>
-          <h1 className="text-4xl font-montserrat font-bold text-primary mb-2">つべナビ スタイルガイド</h1>
+          <h1 className="text-4xl font-montserrat font-bold text-primary mb-2">TubeVision スタイルガイド</h1>
           <p className="text-muted-foreground">ブランディング要素とUIコンポーネントのガイド</p>
         </div>
         
@@ -38,7 +38,7 @@ export default function StyleGuidePage() {
             <Card>
               <CardHeader>
                 <CardTitle>ロゴ</CardTitle>
-                <CardDescription>つべナビの公式ロゴと使用例</CardDescription>
+                <CardDescription>TubeVisionの公式ロゴと使用例</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -46,7 +46,7 @@ export default function StyleGuidePage() {
                     <div className="p-4">
                       <Image 
                         src="/assets/branding/logo.svg" 
-                        alt="つべナビ ロゴ" 
+                        alt="TubeVision ロゴ" 
                         width={200} 
                         height={60} 
                         className="mb-4"
@@ -59,7 +59,7 @@ export default function StyleGuidePage() {
                     <div className="p-4">
                       <Image 
                         src="/assets/branding/logo-alt.svg" 
-                        alt="つべナビ 代替ロゴ" 
+                        alt="TubeVision 代替ロゴ" 
                         width={200} 
                         height={60} 
                         className="mb-4"
@@ -74,7 +74,7 @@ export default function StyleGuidePage() {
                     <div className="p-4">
                       <Image 
                         src={iconSrc}
-                        alt="つべナビ アイコン" 
+                        alt="TubeVision アイコン" 
                         width={80} 
                         height={80} 
                         className="mb-4"
@@ -87,7 +87,7 @@ export default function StyleGuidePage() {
                     <div className="p-4">
                       <Image 
                         src={faviconSrc}
-                        alt="つべナビ ファビコン" 
+                        alt="TubeVision ファビコン" 
                         width={32} 
                         height={32} 
                         className="mb-4"
@@ -100,7 +100,7 @@ export default function StyleGuidePage() {
                     <div className="p-4">
                       <Image 
                         src={iconSrc}
-                        alt="つべナビ アイコン" 
+                        alt="TubeVision アイコン" 
                         width={60} 
                         height={60} 
                         className="mb-4"
@@ -121,7 +121,7 @@ export default function StyleGuidePage() {
                 <div className="border border-border rounded-xl overflow-hidden">
                   <Image 
                     src={ogpSrc}
-                    alt="つべナビ OGP画像" 
+                    alt="TubeVision OGP画像" 
                     width={600} 
                     height={315} 
                     className="w-full"
@@ -136,7 +136,7 @@ export default function StyleGuidePage() {
             <Card>
               <CardHeader>
                 <CardTitle>フォントファミリー</CardTitle>
-                <CardDescription>つべナビで使用されているフォント</CardDescription>
+                <CardDescription>TubeVisionで使用されているフォント</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
@@ -178,7 +178,7 @@ export default function StyleGuidePage() {
             <Card>
               <CardHeader>
                 <CardTitle>カラーパレット</CardTitle>
-                <CardDescription>つべナビのブランドカラーとUI要素のカラー</CardDescription>
+                <CardDescription>TubeVisionのブランドカラーとUI要素のカラー</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

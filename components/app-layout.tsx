@@ -11,7 +11,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isLoginPage = pathname === "/"
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col dark:sf-grid-bg">
       <SkipLink />
       {/* ログインページ以外でヘッダーを表示 */}
       {!isLoginPage && <Header />}
@@ -25,7 +25,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {!isLoginPage && (
         <footer className="bg-background border-t border-border py-4">
           <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} つべナビ. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} TubeVision. All rights reserved.</p>
           </div>
         </footer>
       )}
