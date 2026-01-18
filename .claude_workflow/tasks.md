@@ -39,10 +39,11 @@ tube-naviからtube-getへのリポジトリ移行、セキュリティ強化、
 | 24 | パフォーマンス最適化Phase 2-4 | ✅ | 2026-01-18 14:05 | 2026-01-18 14:15 | debugLog/blur/request-dedup |
 | 25 | アクセシビリティ改善 | ✅ | 2026-01-18 14:20 | 2026-01-18 14:50 | WCAG 2.1 AA準拠 |
 | 26 | E2Eテスト導入 | ✅ | 2026-01-18 14:50 | 2026-01-18 15:15 | Playwright + axe-core |
+| 27 | Vercelログイン500エラー修正 | ✅ | 2026-01-18 15:30 | 2026-01-18 15:45 | outputFileTracingRoot削除/secure動的設定 |
 
 ## 📊 進捗状況
-- **全タスク数**: 26
-- **完了**: 26
+- **全タスク数**: 27
+- **完了**: 27
 - **進行中**: 0
 - **未着手**: 0
 - **進捗率**: 100%
@@ -120,6 +121,7 @@ tube-naviからtube-getへのリポジトリ移行、セキュリティ強化、
 | jspdf-autotable peer dependency競合 | タスク#10 | v5.0.7へ明示的更新 | ✅ 解決 |
 | lucide-react Image衝突 | タスク#14 | document.createElement('img')に変更 | ✅ 解決 |
 | xlsx脆弱性 (High) | タスク#20 | CSV移行で完全解消 | ✅ 解決 |
+| Vercel本番ログインAPI 500エラー | タスク#27 | outputFileTracingRoot削除 | ✅ 解決 |
 
 ## 📝 備考
 
@@ -175,6 +177,24 @@ tube-naviからtube-getへのリポジトリ移行、セキュリティ強化、
   - vitest.config.ts: e2eディレクトリ除外設定
 - **結果**: TypeScript 0件, ESLint 0件, Vitest 19/19, Playwright 18/18, Build OK
 
+### 2026-01-18セッション（夕方 15:30-15:45）
+- **Vercel本番環境ログインAPI 500エラー修正**:
+  - 症状: ログイン時に「レスポンスの解析に失敗しました」エラー
+  - 調査: curlでHTTP 405/500エラー、HTMLレスポンス返却を確認
+  - 原因特定: next.config.mjsの`outputFileTracingRoot`にローカル絶対パス
+    - `/home/motoki/workspace/20_services/tube-get`がハードコード
+    - Vercelサーバーに存在しないパスでAPIルート全体が500エラー
+  - 修正内容:
+    - next.config.mjs: `outputFileTracingRoot`行を完全削除
+    - app/api/auth/route.ts: Cookie `secure`フラグを環境に応じて動的設定
+      - 本番環境（NODE_ENV=production）→ `secure: true`
+      - 開発環境 → `secure: false`
+  - 検証結果:
+    - ローカル: HTTP 200 OK, JSON正常レスポンス
+    - 本番: HTTP 200 OK, Cookie Secureフラグ付与確認
+  - コミット: develop (b6af278), main (3b5654b)
+- **結果**: ログイン機能完全復旧、本番環境でadmin123ログイン成功
+
 ## 🎯 次のステップ
 
 ### 基盤タスク完了！ ✅
@@ -192,7 +212,7 @@ tube-naviからtube-getへのリポジトリ移行、セキュリティ強化、
 
 ---
 *作成日時: 2026-01-17 23:00*
-*最終更新: 2026-01-18 15:15*
+*最終更新: 2026-01-18 15:45*
 *作成者: Claude Sonnet 4.5 (1M context)*
 
 ## 凡例
