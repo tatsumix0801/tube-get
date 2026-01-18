@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, memo } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -47,7 +47,8 @@ interface VideoTableProps {
   videos: Video[]
 }
 
-export function VideoTable({ videos }: VideoTableProps) {
+// React.memoでコンポーネントをメモ化
+export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) {
   const [sortField, setSortField] = useState<keyof Video | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
   const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(null)
@@ -103,27 +104,30 @@ export function VideoTable({ videos }: VideoTableProps) {
     }
   }
 
-  const sortedVideos = [...videos].sort((a, b) => {
-    if (!sortField) return 0
+  // ソート済み動画リスト（useMemoでメモ化）
+  const sortedVideos = useMemo(() => {
+    return [...videos].sort((a, b) => {
+      if (!sortField) return 0
 
-    const normalizeValue = (value: Video[keyof Video] | undefined): string | number => {
-      if (value === undefined) return ""
-      if (typeof value === "number") return value
-      if (Array.isArray(value)) return value.join(",")
-      if (typeof value === "string") {
-        const numericValue = Number(value.replace(/,/g, ""))
-        return Number.isNaN(numericValue) ? value : numericValue
+      const normalizeValue = (value: Video[keyof Video] | undefined): string | number => {
+        if (value === undefined) return ""
+        if (typeof value === "number") return value
+        if (Array.isArray(value)) return value.join(",")
+        if (typeof value === "string") {
+          const numericValue = Number(value.replace(/,/g, ""))
+          return Number.isNaN(numericValue) ? value : numericValue
+        }
+        return ""
       }
-      return ""
-    }
 
-    const valueA = normalizeValue(a[sortField])
-    const valueB = normalizeValue(b[sortField])
+      const valueA = normalizeValue(a[sortField])
+      const valueB = normalizeValue(b[sortField])
 
-    if (valueA < valueB) return sortDirection === "asc" ? -1 : 1
-    if (valueA > valueB) return sortDirection === "asc" ? 1 : -1
-    return 0
-  })
+      if (valueA < valueB) return sortDirection === "asc" ? -1 : 1
+      if (valueA > valueB) return sortDirection === "asc" ? 1 : -1
+      return 0
+    })
+  }, [videos, sortField, sortDirection])
 
   const getSortIcon = (field: keyof Video) => {
     if (sortField !== field) return <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
@@ -649,4 +653,4 @@ export function VideoTable({ videos }: VideoTableProps) {
       )}
     </div>
   )
-}
+})

@@ -136,51 +136,7 @@ describe('GET /api/youtube/videos', () => {
       expect(videoIds).toContain('PIe60_9RNVI');
     });
 
-    it.skip('mode=fastの場合、getChannelVideosを呼び出すこと', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const mockVideos = [
-        {
-          id: 'video1',
-          title: 'テスト動画',
-          description: '説明',
-          publishedAt: '2024-01-01T00:00:00Z',
-          thumbnail: 'https://example.com/thumb.jpg',
-          duration: '10:00',
-          viewCount: '1,000',
-          likeCount: '100',
-          commentCount: '10',
-          spreadRate: 50,
-          url: 'https://www.youtube.com/watch?v=video1',
-          tags: [],
-          topics: []
-        }
-      ];
-
-      // mockGetChannelVideos.mockResolvedValue({
-      //   success: true,
-      //   videos: mockVideos,
-      //   nextPageToken: 'nextToken',
-      //   totalResults: 100
-      // });
-
-      const request = new NextRequest(
-        'http://localhost:3000/api/youtube/videos?apiKey=testKey&channelUrl=@test&mode=fast'
-      );
-      const response = await GET(request);
-      const data = await response.json();
-
-      // expect(mockGetChannelVideos).toHaveBeenCalledWith(
-      //   'testChannelId',
-      //   'testKey',
-      //   '',
-      //   50
-      // );
-      // expect(mockGetChannelVideosComplete).not.toHaveBeenCalled();
-
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.videos).toHaveLength(1);
-    });
+    // 注: fastモードは廃止されたため、関連テストは削除されました
 
     it('modeパラメータがない場合、デフォルトでcompleteモードを使用すること', async () => {
       const mockVideos = [
@@ -247,26 +203,7 @@ describe('GET /api/youtube/videos', () => {
       );
     });
 
-    it.skip('pageTokenパラメータがfastモードで正しく処理されること', async () => {
-      // mockGetChannelVideos.mockResolvedValue({
-      //   success: true,
-      //   videos: [],
-      //   nextPageToken: null,
-      //   totalResults: 0
-      // });
-
-      const request = new NextRequest(
-        'http://localhost:3000/api/youtube/videos?apiKey=testKey&channelUrl=@test&mode=fast&pageToken=token123'
-      );
-      await GET(request);
-
-      // expect(mockGetChannelVideos).toHaveBeenCalledWith(
-      //   'testChannelId',
-      //   'testKey',
-      //   'token123',
-      //   50
-      // );
-    });
+    // 注: pageTokenパラメータのfastモードテストは廃止されました
   });
 
   describe('エラーハンドリング', () => {

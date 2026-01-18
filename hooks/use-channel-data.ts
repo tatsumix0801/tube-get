@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getSpecificVideos } from "@/lib/youtube-api"
+import { getCached, setCache, CacheKeys } from "@/lib/api-cache"
 
 // 型定義
 export interface ChannelInfo {
@@ -109,13 +110,22 @@ export function useChannelData(): UseChannelDataResult {
     }
   }
 
-  // 全ての動画を取得する関数（ページネーション対応）
+  // 全ての動画を取得する関数（ページネーション対応・キャッシュ対応）
   const fetchAllVideos = async (channelUrl: string, apiKey: string): Promise<{success: boolean, videos: Video[], message?: string}> => {
+    // キャッシュをチェック（channelUrlをキーとして使用）
+    const cacheKey = CacheKeys.channelVideos(channelUrl)
+    const cachedVideos = getCached<Video[]>(cacheKey)
+    if (cachedVideos) {
+      console.log("[INFO] キャッシュから動画を取得:", cachedVideos.length, "件")
+      toast.success(`キャッシュから${cachedVideos.length}件の動画を取得しました`)
+      return { success: true, videos: cachedVideos }
+    }
+
     const allVideos: Video[] = [];
     let currentPageToken = "";
     let pageCount = 0;
     // ページ制限を撤廃し、nextPageTokenがある限り継続
-    
+
     try {
       // 初回の進捗表示
       toast.info("動画情報を取得中...");
@@ -248,7 +258,11 @@ export function useChannelData(): UseChannelDataResult {
       
       // 取得完了メッセージ
       toast.success(`全${allVideos.length}件の動画を取得しました`);
-      
+
+      // キャッシュに保存（5分間有効）
+      setCache(cacheKey, allVideos)
+      console.log("[INFO] 動画データをキャッシュに保存:", allVideos.length, "件")
+
       return {
         success: true,
         videos: allVideos
