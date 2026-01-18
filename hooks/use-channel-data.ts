@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getSpecificVideos } from "@/lib/youtube-api"
 import { getCached, setCache, CacheKeys } from "@/lib/api-cache"
 import { debugLog } from "@/lib/logger"
-import { dedupedFetch } from "@/lib/request-dedup"
 
 // 型定義
 export interface ChannelInfo {
@@ -13,7 +12,7 @@ export interface ChannelInfo {
   description: string
   customUrl: string
   publishedAt: string
-  thumbnails: any
+  thumbnails: unknown
   subscriberCount: string
   videoCount: string
   viewCount: string
@@ -39,6 +38,38 @@ export interface Video {
   type?: "standard" | "short" // 動画タイプを識別するフィールドを追加
 }
 
+// 動画タイプを識別する関数
+function identifyVideoType(video: Video): "standard" | "short" {
+  // YouTubeショート動画は通常60秒未満
+  const durationInSeconds = parseDuration(video.duration);
+  return durationInSeconds <= 60 ? "short" : "standard";
+}
+
+// 動画の長さ(PT1H2M3S形式)を秒数に変換
+function parseDuration(duration: string): number {
+  let seconds = 0;
+  
+  // 時間 (H)
+  const hoursMatch = duration.match(/(\d+)H/);
+  if (hoursMatch) {
+    seconds += parseInt(hoursMatch[1]) * 3600;
+  }
+  
+  // 分 (M)
+  const minutesMatch = duration.match(/(\d+)M/);
+  if (minutesMatch) {
+    seconds += parseInt(minutesMatch[1]) * 60;
+  }
+  
+  // 秒 (S)
+  const secondsMatch = duration.match(/(\d+)S/);
+  if (secondsMatch) {
+    seconds += parseInt(secondsMatch[1]);
+  }
+  
+  return seconds;
+}
+
 export interface UseChannelDataResult {
   channelInfo: ChannelInfo | null
   videos: Video[]
@@ -57,63 +88,8 @@ export function useChannelData(): UseChannelDataResult {
   const [error, setError] = useState("")
   const router = useRouter()
 
-  // チャンネル情報と動画リストを取得
-  const fetchChannelData = async () => {
-    setIsLoading(true)
-    setError("")
-
-    try {
-      // セッションストレージからチャンネル情報を取得
-      const storedChannelInfo = sessionStorage.getItem("currentChannelInfo")
-      const channelUrl = sessionStorage.getItem("currentChannelUrl")
-
-      if (!storedChannelInfo || !channelUrl) {
-        setError("チャンネル情報が見つかりません")
-        router.push("/dashboard")
-        return
-      }
-
-      // チャンネル情報を設定
-      const parsedChannelInfo = JSON.parse(storedChannelInfo)
-      setChannelInfo(parsedChannelInfo)
-
-      // APIキーを取得
-      const apiKey = sessionStorage.getItem("youtube_api_key")
-      if (!apiKey) {
-        setError("YouTube API Keyが見つかりません")
-        toast.error("YouTube API Keyが見つかりません")
-        router.push("/dashboard")
-        return
-      }
-
-      // 全ての動画を取得（ページネーション対応）
-      debugLog("[INFO] Fetching videos with API key length:", apiKey.length);
-      const allVideos = await fetchAllVideos(channelUrl, apiKey)
-      
-      if (!allVideos.success) {
-        console.error("[ERROR] Failed to fetch videos:", allVideos.message);
-        const errorMsg = allVideos.message || "動画情報の取得に失敗しました";
-        setError(errorMsg)
-        toast.error(errorMsg, {
-          description: "APIキーが正しいか、ネットワーク接続を確認してください。",
-          duration: 10000,
-        })
-        return
-      }
-
-      // 動画リストを設定
-      setVideos(allVideos.videos)
-    } catch (error) {
-      console.error("Channel data fetch error:", error)
-      setError("チャンネルデータの取得中にエラーが発生しました")
-      toast.error("チャンネルデータの取得中にエラーが発生しました")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   // 全ての動画を取得する関数（ページネーション対応・キャッシュ対応）
-  const fetchAllVideos = async (channelUrl: string, apiKey: string): Promise<{success: boolean, videos: Video[], message?: string}> => {
+  const fetchAllVideos = useCallback(async (channelUrl: string, apiKey: string): Promise<{success: boolean, videos: Video[], message?: string}> => {
     // キャッシュをチェック（channelUrlをキーとして使用）
     const cacheKey = CacheKeys.channelVideos(channelUrl)
     const cachedVideos = getCached<Video[]>(cacheKey)
@@ -301,12 +277,67 @@ export function useChannelData(): UseChannelDataResult {
         message: errorMessage
       }
     }
-  }
+  }, [])
+
+  // チャンネル情報と動画リストを取得
+  const fetchChannelData = useCallback(async () => {
+    setIsLoading(true)
+    setError("")
+
+    try {
+      // セッションストレージからチャンネル情報を取得
+      const storedChannelInfo = sessionStorage.getItem("currentChannelInfo")
+      const channelUrl = sessionStorage.getItem("currentChannelUrl")
+
+      if (!storedChannelInfo || !channelUrl) {
+        setError("チャンネル情報が見つかりません")
+        router.push("/dashboard")
+        return
+      }
+
+      // チャンネル情報を設定
+      const parsedChannelInfo = JSON.parse(storedChannelInfo)
+      setChannelInfo(parsedChannelInfo)
+
+      // APIキーを取得
+      const apiKey = sessionStorage.getItem("youtube_api_key")
+      if (!apiKey) {
+        setError("YouTube API Keyが見つかりません")
+        toast.error("YouTube API Keyが見つかりません")
+        router.push("/dashboard")
+        return
+      }
+
+      // 全ての動画を取得（ページネーション対応）
+      debugLog("[INFO] Fetching videos with API key length:", apiKey.length);
+      const allVideos = await fetchAllVideos(channelUrl, apiKey)
+      
+      if (!allVideos.success) {
+        console.error("[ERROR] Failed to fetch videos:", allVideos.message);
+        const errorMsg = allVideos.message || "動画情報の取得に失敗しました";
+        setError(errorMsg)
+        toast.error(errorMsg, {
+          description: "APIキーが正しいか、ネットワーク接続を確認してください。",
+          duration: 10000,
+        })
+        return
+      }
+
+      // 動画リストを設定
+      setVideos(allVideos.videos)
+    } catch (error) {
+      console.error("Channel data fetch error:", error)
+      setError("チャンネルデータの取得中にエラーが発生しました")
+      toast.error("チャンネルデータの取得中にエラーが発生しました")
+    } finally {
+      setIsLoading(false)
+    }
+  }, [fetchAllVideos, router])
 
   // 初回読み込み時にデータを取得
   useEffect(() => {
     fetchChannelData()
-  }, [router])
+  }, [fetchChannelData])
 
   // ファビコンを動的に設定
   useEffect(() => {
@@ -320,38 +351,6 @@ export function useChannelData(): UseChannelDataResult {
       document.title = 'つべナビ - YouTubeチャンネル分析ツール';
     };
   }, [channelInfo]);
-
-  // 動画タイプを識別する関数
-  function identifyVideoType(video: Video): "standard" | "short" {
-    // YouTubeショート動画は通常60秒未満
-    const durationInSeconds = parseDuration(video.duration);
-    return durationInSeconds <= 60 ? "short" : "standard";
-  }
-
-  // 動画の長さ(PT1H2M3S形式)を秒数に変換
-  function parseDuration(duration: string): number {
-    let seconds = 0;
-    
-    // 時間 (H)
-    const hoursMatch = duration.match(/(\d+)H/);
-    if (hoursMatch) {
-      seconds += parseInt(hoursMatch[1]) * 3600;
-    }
-    
-    // 分 (M)
-    const minutesMatch = duration.match(/(\d+)M/);
-    if (minutesMatch) {
-      seconds += parseInt(minutesMatch[1]) * 60;
-    }
-    
-    // 秒 (S)
-    const secondsMatch = duration.match(/(\d+)S/);
-    if (secondsMatch) {
-      seconds += parseInt(secondsMatch[1]);
-    }
-    
-    return seconds;
-  }
 
   // 期間フィルタリングの関数
   const filteredVideos = (period: string) => {

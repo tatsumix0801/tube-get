@@ -3,8 +3,6 @@
  * getChannelVideosComplete関数の動作を検証
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { vi, type Mock } from 'vitest';
 import { getChannelVideosComplete } from '../youtube-api';
 
