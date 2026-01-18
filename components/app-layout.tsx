@@ -4,6 +4,7 @@ import React from "react"
 import { usePathname } from "next/navigation"
 import { Header } from "@/components/header"
 import { FaviconManager } from "@/components/favicon-manager"
+import { SkipLink } from "@/components/skip-link"
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -11,10 +12,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <SkipLink />
       {/* ログインページ以外でヘッダーを表示 */}
       {!isLoginPage && <Header />}
-      
-      <main className="flex-1">
+
+      <main id="main-content" className="flex-1">
         <FaviconManager />
         {children}
       </main>

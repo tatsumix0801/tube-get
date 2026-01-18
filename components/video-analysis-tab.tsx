@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, Eye, ThumbsUp, MessageSquare, TrendingUp, Image, Award } from "lucide-react"
@@ -25,8 +25,8 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
   // 良いチャンネル判定フックを使用
   const isGood = useGoodChannel(videos)
 
-  // 期間フィルタリング
-  const getFilteredVideos = () => {
+  // 期間フィルタリング（useMemoでメモ化）
+  const filteredVideos = useMemo(() => {
     if (!videos.length) return []
 
     const now = new Date()
@@ -53,7 +53,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
     }
 
     return videos.filter((video) => new Date(video.publishedAt) >= filterDate)
-  }
+  }, [videos, activeTab])
 
   // CSV形式でエクスポート
   const handleExportCSV = async () => {
@@ -82,7 +82,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
         },
         body: JSON.stringify({
           channelInfo,
-          videos: getFilteredVideos(),
+          videos: filteredVideos,
           exportOptions: userSettings.exportOptions
         }),
       })
@@ -129,7 +129,6 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
     setIsExportingThumbnails(true)
     
     try {
-      const filteredVideos = getFilteredVideos()
       const zip = new JSZip()
       let completedCount = 0
       const totalVideos = filteredVideos.length
@@ -269,32 +268,34 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
     }
   };
 
-  const filteredVideos = getFilteredVideos()
+  // 統計データの計算（useMemoでメモ化）
+  const { avgViews, avgLikes, avgComments, avgSpreadRate } = useMemo(() => {
+    if (!filteredVideos.length) {
+      return { avgViews: 0, avgLikes: 0, avgComments: 0, avgSpreadRate: 0 }
+    }
 
-  // 統計データの計算
-  const totalViews = filteredVideos.reduce(
-    (sum, video) => sum + Number.parseInt(video.viewCount.replace(/,/g, ""), 10),
-    0
-  )
-  const avgViews = filteredVideos.length > 0 ? Math.round(totalViews / filteredVideos.length) : 0
-  
-  const totalLikes = filteredVideos.reduce(
-    (sum, video) => sum + Number.parseInt(video.likeCount.replace(/,/g, ""), 10),
-    0
-  )
-  const avgLikes = filteredVideos.length > 0 ? Math.round(totalLikes / filteredVideos.length) : 0
-  
-  const totalComments = filteredVideos.reduce(
-    (sum, video) => sum + Number.parseInt(video.commentCount.replace(/,/g, ""), 10),
-    0
-  )
-  const avgComments = filteredVideos.length > 0 ? Math.round(totalComments / filteredVideos.length) : 0
+    const totalViews = filteredVideos.reduce(
+      (sum, video) => sum + Number.parseInt(video.viewCount.replace(/,/g, ""), 10),
+      0
+    )
+    const avgViews = Math.round(totalViews / filteredVideos.length)
 
-  // フィルタリングで絞り込まれた動画の割合
-  // スプレッドレートの計算
-  const avgSpreadRate = filteredVideos.length > 0
-    ? filteredVideos.reduce((sum, video) => sum + video.spreadRate, 0) / filteredVideos.length
-    : 0
+    const totalLikes = filteredVideos.reduce(
+      (sum, video) => sum + Number.parseInt(video.likeCount.replace(/,/g, ""), 10),
+      0
+    )
+    const avgLikes = Math.round(totalLikes / filteredVideos.length)
+
+    const totalComments = filteredVideos.reduce(
+      (sum, video) => sum + Number.parseInt(video.commentCount.replace(/,/g, ""), 10),
+      0
+    )
+    const avgComments = Math.round(totalComments / filteredVideos.length)
+
+    const avgSpreadRate = filteredVideos.reduce((sum, video) => sum + video.spreadRate, 0) / filteredVideos.length
+
+    return { avgViews, avgLikes, avgComments, avgSpreadRate }
+  }, [filteredVideos])
 
   return (
     <div className="space-y-4">
@@ -329,7 +330,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
       
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-          <TabsList>
+          <TabsList aria-label="期間フィルター">
             <TabsTrigger value="all">全期間</TabsTrigger>
             <TabsTrigger value="week">1週間</TabsTrigger>
             <TabsTrigger value="month">1ヶ月</TabsTrigger>

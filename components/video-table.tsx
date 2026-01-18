@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, memo, useRef, useCallback } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -47,7 +47,8 @@ interface VideoTableProps {
   videos: Video[]
 }
 
-export function VideoTable({ videos }: VideoTableProps) {
+// React.memoでコンポーネントをメモ化
+export const VideoTable = memo(function VideoTable({ videos }: VideoTableProps) {
   const [sortField, setSortField] = useState<keyof Video | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
   const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(null)
@@ -63,6 +64,7 @@ export function VideoTable({ videos }: VideoTableProps) {
     showDescription: true,
     showThumbnails: true,
   })
+  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([])
 
   // 設定の読み込み
   useEffect(() => {
@@ -103,27 +105,30 @@ export function VideoTable({ videos }: VideoTableProps) {
     }
   }
 
-  const sortedVideos = [...videos].sort((a, b) => {
-    if (!sortField) return 0
+  // ソート済み動画リスト（useMemoでメモ化）
+  const sortedVideos = useMemo(() => {
+    return [...videos].sort((a, b) => {
+      if (!sortField) return 0
 
-    const normalizeValue = (value: Video[keyof Video] | undefined): string | number => {
-      if (value === undefined) return ""
-      if (typeof value === "number") return value
-      if (Array.isArray(value)) return value.join(",")
-      if (typeof value === "string") {
-        const numericValue = Number(value.replace(/,/g, ""))
-        return Number.isNaN(numericValue) ? value : numericValue
+      const normalizeValue = (value: Video[keyof Video] | undefined): string | number => {
+        if (value === undefined) return ""
+        if (typeof value === "number") return value
+        if (Array.isArray(value)) return value.join(",")
+        if (typeof value === "string") {
+          const numericValue = Number(value.replace(/,/g, ""))
+          return Number.isNaN(numericValue) ? value : numericValue
+        }
+        return ""
       }
-      return ""
-    }
 
-    const valueA = normalizeValue(a[sortField])
-    const valueB = normalizeValue(b[sortField])
+      const valueA = normalizeValue(a[sortField])
+      const valueB = normalizeValue(b[sortField])
 
-    if (valueA < valueB) return sortDirection === "asc" ? -1 : 1
-    if (valueA > valueB) return sortDirection === "asc" ? 1 : -1
-    return 0
-  })
+      if (valueA < valueB) return sortDirection === "asc" ? -1 : 1
+      if (valueA > valueB) return sortDirection === "asc" ? 1 : -1
+      return 0
+    })
+  }, [videos, sortField, sortDirection])
 
   const getSortIcon = (field: keyof Video) => {
     if (sortField !== field) return <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
@@ -133,6 +138,35 @@ export function VideoTable({ videos }: VideoTableProps) {
       <ArrowDown className="ml-1 h-4 w-4 text-purple-500" />
     )
   }
+
+  // フォーカス管理関数
+  const focusRow = useCallback((index: number) => {
+    if (index >= 0 && index < sortedVideos.length && rowRefs.current[index]) {
+      rowRefs.current[index]?.focus()
+    }
+  }, [sortedVideos.length])
+
+  // キーボードナビゲーション
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, index: number) => {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        focusRow(index + 1)
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        focusRow(index - 1)
+        break
+      case 'Home':
+        e.preventDefault()
+        focusRow(0)
+        break
+      case 'End':
+        e.preventDefault()
+        focusRow(sortedVideos.length - 1)
+        break
+    }
+  }, [focusRow, sortedVideos.length])
 
   if (videos.length === 0) {
     return (
@@ -307,7 +341,15 @@ export function VideoTable({ videos }: VideoTableProps) {
             </TableHeader>
             <TableBody>
               {sortedVideos.map((video, index) => (
-                <TableRow key={`${video.id}-${index}`} className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+                <TableRow
+                  key={`${video.id}-${index}`}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-purple-50 dark:focus:bg-purple-900/20"
+                  tabIndex={0}
+                  ref={(el) => { rowRefs.current[index] = el }}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  role="row"
+                  aria-rowindex={index + 1}
+                >
                   <TableCell className="font-medium">
                     {new Date(video.publishedAt).toLocaleDateString("ja-JP", {
                       year: "numeric",
@@ -346,8 +388,10 @@ export function VideoTable({ videos }: VideoTableProps) {
                               alt={video.title}
                               fill
                               className="object-cover rounded-md shadow-sm group-hover:shadow-md transition-all"
+                              placeholder="blur"
+                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUG/8QAIRAAAgICAQQDAAAAAAAAAAAAAQIDBAAFESExQVFhcYH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AzOra+e3J6VWtFcmjiMzxo/CqvHOCfoHIwwH/2Q=="
                             />
-                            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+                            <div className="absolute bottom-2 right-2 bg-black/85 text-white text-xs px-1 py-0.5 rounded">
                               {video.duration.includes(':') 
                                 ? video.duration.replace(/(\d+):(\d)$/, '$1:0$2') 
                                 : `00:${video.duration.padStart(2, '0')}`}
@@ -365,6 +409,8 @@ export function VideoTable({ videos }: VideoTableProps) {
                               width={1280}
                               height={720}
                               className="max-w-full max-h-[70vh] object-contain rounded-md shadow-md"
+                              placeholder="blur"
+                              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUG/8QAIRAAAgICAQQDAAAAAAAAAAAAAQIDBAAFESExQVFhcYH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AzOra+e3J6VWtFcmjiMzxo/CqvHOCfoHIwwH/2Q=="
                             />
                             <Button 
                               variant="outline" 
@@ -538,9 +584,11 @@ export function VideoTable({ videos }: VideoTableProps) {
                             width={160}
                             height={90}
                             className="w-full md:w-[160px] aspect-video object-cover rounded"
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUG/8QAIRAAAgICAQQDAAAAAAAAAAAAAQIDBAAFESExQVFhcYH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AzOra+e3J6VWtFcmjiMzxo/CqvHOCfoHIwwH/2Q=="
                           />
                           {displaySettings.showDuration && (
-                            <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded">
+                            <div className="absolute bottom-1 right-1 bg-black/85 text-white text-xs px-1 rounded">
                               {video.duration}
                             </div>
                           )}
@@ -557,6 +605,8 @@ export function VideoTable({ videos }: VideoTableProps) {
                             width={1280}
                             height={720}
                             className="w-full rounded-md"
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAUG/8QAIRAAAgICAQQDAAAAAAAAAAAAAQIDBAAFESExQVFhcYH/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AzOra+e3J6VWtFcmjiMzxo/CqvHOCfoHIwwH/2Q=="
                           />
                         )}
                       </DialogContent>
@@ -649,4 +699,4 @@ export function VideoTable({ videos }: VideoTableProps) {
       )}
     </div>
   )
-}
+})

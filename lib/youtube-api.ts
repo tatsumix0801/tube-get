@@ -2,6 +2,7 @@
 
 import { logError, logInfo } from "./error-logger"
 import { formatNumber } from "./format-utils"
+import { debugLog } from "./logger"
 import type { 
   YouTubeChannel, 
   YouTubePlaylistItem, 
@@ -327,7 +328,7 @@ export async function getChannelVideosComplete(
       maxVideos,
       method: "playlistItems"
     });
-    console.log("[DEBUG] getChannelVideosComplete called with channelId:", channelId, "maxVideos:", maxVideos);
+    debugLog("getChannelVideosComplete called with channelId:", channelId, "maxVideos:", maxVideos);
 
     // 1. チャンネル情報を取得してuploads playlist IDと登録者数を取得
     const channelResponse = await fetch(
@@ -347,8 +348,8 @@ export async function getChannelVideosComplete(
     const uploadsPlaylistId = channelData.items[0]?.contentDetails?.relatedPlaylists?.uploads;
     const subscriberCount = Number.parseInt(channelData.items[0]?.statistics?.subscriberCount || "1000", 10);
     
-    console.log("[DEBUG] Uploads playlist ID:", uploadsPlaylistId);
-    console.log("[DEBUG] Subscriber count:", subscriberCount);
+    debugLog("Uploads playlist ID:", uploadsPlaylistId);
+    debugLog("Subscriber count:", subscriberCount);
     
     if (!uploadsPlaylistId) {
       throw new Error("アップロードプレイリストが見つかりません");
@@ -363,7 +364,7 @@ export async function getChannelVideosComplete(
       pageToken ? `&pageToken=${pageToken}` : ""  // 受け取ったpageTokenを使用
     }&key=${apiKey}`;
     
-    console.log("[DEBUG] Fetching playlist page with pageToken:", pageToken || "none");
+    debugLog("Fetching playlist page with pageToken:", pageToken || "none");
     
     const playlistResponse = await fetch(playlistUrl);
     apiCallCount++;
@@ -376,7 +377,7 @@ export async function getChannelVideosComplete(
       const playlistData = await playlistResponse.json();
       
       // ページ情報のデバッグ
-      console.log("[DEBUG] PlaylistItems response:", {
+      debugLog("PlaylistItems response:", {
         itemCount: playlistData.items?.length,
         nextPageToken: playlistData.nextPageToken,
         prevPageToken: playlistData.prevPageToken,
@@ -384,31 +385,31 @@ export async function getChannelVideosComplete(
       });
       
       // 動画IDを抽出（削除済みの動画も含む可能性がある）
-      console.log("[DEBUG] Page fetched. Total items in page:", playlistData.items?.length);
+      debugLog("Page fetched. Total items in page:", playlistData.items?.length);
       const allVideoIdsInPage = playlistData.items
         .map((item: YouTubePlaylistItem) => {
           const videoId = item.snippet?.resourceId?.videoId;
           if (!videoId) {
-            console.log("[DEBUG] Item without videoId:", item);
+            debugLog("Item without videoId:", item);
           }
           return videoId;
         })
         .filter(Boolean);
       
-      console.log("[DEBUG] Extracted video IDs count:", allVideoIdsInPage.length);
+      debugLog("Extracted video IDs count:", allVideoIdsInPage.length);
       
       // 問題の動画IDが含まれているか確認
       const problemVideoIds = ['x4BBWXihl7U', 'PIe60_9RNVI'];
       const foundProblemVideos = allVideoIdsInPage.filter((id: string) => problemVideoIds.includes(id));
       if (foundProblemVideos.length > 0) {
-        console.log("[DEBUG] ⚠️ Found problem videos in playlistItems:", foundProblemVideos);
+        debugLog("⚠️ Found problem videos in playlistItems:", foundProblemVideos);
       }
       
       const videoIds = allVideoIdsInPage;
       
       if (videoIds.length === 0) {
         // 動画IDが0でも、nextPageTokenを返して処理を継続できるようにする
-        console.log("[DEBUG] No valid video IDs in this page, but continuing with nextPageToken:", playlistData.nextPageToken);
+        debugLog("No valid video IDs in this page, but continuing with nextPageToken:", playlistData.nextPageToken);
         return {
           videos: [],  // 空配列を返す
           nextPageToken: playlistData.nextPageToken || null,
@@ -417,7 +418,7 @@ export async function getChannelVideosComplete(
         };
       }
       
-      console.log("[DEBUG] Video IDs to fetch details:", videoIds);
+      debugLog("Video IDs to fetch details:", videoIds);
       
       // 3. 動画の詳細情報を取得
       const videoDetailsResponse = await fetch(
@@ -433,12 +434,12 @@ export async function getChannelVideosComplete(
       const videoDetails = await videoDetailsResponse.json();
       
       // 問題の動画の詳細情報を確認
-      console.log("[DEBUG] Total videos in details response:", videoDetails.items?.length);
+      debugLog("Total videos in details response:", videoDetails.items?.length);
       const problemVideosInDetails = videoDetails.items?.filter((v: YouTubeVideo) => 
         ['x4BBWXihl7U', 'PIe60_9RNVI'].includes(v.id)
       );
       if (problemVideosInDetails && problemVideosInDetails.length > 0) {
-        console.log("[DEBUG] ⚠️ Problem videos in details:", problemVideosInDetails.map((v: YouTubeVideo) => ({
+        debugLog("⚠️ Problem videos in details:", problemVideosInDetails.map((v: YouTubeVideo) => ({
           id: v.id,
           hasSnippet: !!v.snippet,
           hasStatistics: !!v.statistics,
@@ -448,14 +449,14 @@ export async function getChannelVideosComplete(
       }
       
       // 4. 削除済み/非公開動画をフィルタリング（条件緩和版）
-      console.log("[DEBUG] Filtering videos. Include deleted:", includeDeleted, "Include restricted:", includeRestricted);
+      debugLog("Filtering videos. Include deleted:", includeDeleted, "Include restricted:", includeRestricted);
       const excludedVideos: Array<Record<string, unknown>> = [];
       const restrictedVideos: Array<Record<string, unknown>> = [];
       
       const validVideos = videoDetails.items.filter((video: YouTubeVideo) => {
         // 問題の動画IDの場合は特別処理
         if (['x4BBWXihl7U', 'PIe60_9RNVI'].includes(video.id)) {
-          console.log("[DEBUG] ⚠️ Processing problem video:", video.id, {
+          debugLog("⚠️ Processing problem video:", video.id, {
             hasSnippet: !!video.snippet,
             hasStatistics: !!video.statistics,
             hasStatus: !!video.status,
@@ -503,24 +504,24 @@ export async function getChannelVideosComplete(
       });
       
       if (excludedVideos.length > 0) {
-        console.log("[DEBUG] ⚠️ Excluded videos:", excludedVideos);
+        debugLog("⚠️ Excluded videos:", excludedVideos);
         const problemExcluded = excludedVideos.filter(v =>
           ['x4BBWXihl7U', 'PIe60_9RNVI'].includes(v.id as string)
         );
         if (problemExcluded.length > 0) {
-          console.log("[DEBUG] ❌ PROBLEM VIDEOS WERE EXCLUDED:", problemExcluded);
+          debugLog("❌ PROBLEM VIDEOS WERE EXCLUDED:", problemExcluded);
         }
       }
       
       if (restrictedVideos.length > 0) {
-        console.log("[DEBUG] ⚠️ Restricted videos included:", restrictedVideos);
+        debugLog("⚠️ Restricted videos included:", restrictedVideos);
       }
       
       // 5. 動画情報を整形（既存の形式に合わせる）
       const formattedVideos = validVideos.map((video: YouTubeVideo) => {
         // 制限付き動画の場合の処理
         if (!video.snippet || !video.statistics) {
-          console.log("[DEBUG] Formatting restricted video:", video.id);
+          debugLog("Formatting restricted video:", video.id);
           return {
             id: video.id,
             title: video.snippet?.title || `[制限付き動画] ${video.id}`,
@@ -592,18 +593,18 @@ export async function getChannelVideosComplete(
       const returnNextPageToken = playlistData.nextPageToken;
     
     // 6. 公開日時で降順ソート（最新順）
-    console.log("[DEBUG] Total videos found in this page:", allVideos.length);
-    console.log("[DEBUG] Has next page:", !!returnNextPageToken);
-    console.log("[DEBUG] First 5 video IDs:", allVideos.slice(0, 5).map(v => v.id));
+    debugLog("Total videos found in this page:", allVideos.length);
+    debugLog("Has next page:", !!returnNextPageToken);
+    debugLog("First 5 video IDs:", allVideos.slice(0, 5).map(v => v.id));
     
     // 問題の動画が最終結果に含まれているか確認
     const finalProblemVideos = allVideos.filter(v => 
       ['x4BBWXihl7U', 'PIe60_9RNVI'].includes(v.id)
     );
     if (finalProblemVideos.length > 0) {
-      console.log("[DEBUG] ✅ Problem videos in final result:", finalProblemVideos.map(v => v.id));
+      debugLog("✅ Problem videos in final result:", finalProblemVideos.map(v => v.id));
     } else {
-      console.log("[DEBUG] ❌ Problem videos NOT in final result");
+      debugLog("❌ Problem videos NOT in final result");
     }
     
     allVideos.sort((a, b) => 
@@ -618,7 +619,7 @@ export async function getChannelVideosComplete(
       hasNextPage: !!returnNextPageToken
     });
     
-    console.log("[DEBUG] Returning from getChannelVideosComplete:", {
+    debugLog("Returning from getChannelVideosComplete:", {
       videoCount: allVideos.length,
       nextPageToken: returnNextPageToken || null,
       problemVideosIncluded: allVideos.filter(v => ['x4BBWXihl7U', 'PIe60_9RNVI'].includes(v.id)).length
@@ -650,11 +651,11 @@ export async function getChannelVideosComplete(
       { channelId, method: "playlistItems" }
     );
     
-    console.log("[DEBUG] Error in getChannelVideosComplete:", errorMessage);
+    debugLog("Error in getChannelVideosComplete:", errorMessage);
     
     // エラー時でも部分的な結果を返す
     if (allVideos.length > 0) {
-      console.log("[DEBUG] Returning partial results:", allVideos.length, "videos");
+      debugLog("Returning partial results:", allVideos.length, "videos");
       return {
         success: true,
         videos: allVideos,
@@ -694,7 +695,7 @@ export async function getSpecificVideos(
   }
 
   try {
-    console.log("[DEBUG] Fetching specific videos:", videoIds);
+    debugLog("Fetching specific videos:", videoIds);
     
     const response = await fetch(
       `${API_BASE_URL}/videos?part=snippet,contentDetails,statistics&id=${videoIds.join(",")}&key=${apiKey}`
@@ -709,7 +710,7 @@ export async function getSpecificVideos(
     const data = await response.json() as YouTubeApiResponse<YouTubeVideo>;
     
     if (!data.items || data.items.length === 0) {
-      console.log("[DEBUG] No videos found for IDs:", videoIds);
+      debugLog("No videos found for IDs:", videoIds);
       return [];
     }
     
@@ -752,7 +753,7 @@ export async function getSpecificVideos(
       };
     });
     
-    console.log("[DEBUG] Successfully fetched specific videos:", formattedVideos.length);
+    debugLog("Successfully fetched specific videos:", formattedVideos.length);
     return formattedVideos;
     
   } catch (error) {
