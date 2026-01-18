@@ -5,7 +5,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { vi, type Mock, type MockedFunction } from 'vitest';
+import { vi, type MockedFunction } from 'vitest';
 import { GET } from '../route';
 import { NextRequest } from 'next/server';
 import * as youtubeApi from '@/lib/youtube-api';
@@ -137,6 +137,7 @@ describe('GET /api/youtube/videos', () => {
     });
 
     it.skip('mode=fastの場合、getChannelVideosを呼び出すこと', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const mockVideos = [
         {
           id: 'video1',

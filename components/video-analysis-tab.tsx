@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileSpreadsheet, Eye, ThumbsUp, MessageSquare, TrendingUp, Image, Award } from "lucide-react"
+import { FileText, Eye, ThumbsUp, MessageSquare, TrendingUp, Image, Award } from "lucide-react"
 import { VideoTable } from "@/components/video-table"
 import { Video } from "@/hooks/use-channel-data"
 import { formatNumber } from "@/lib/format-utils"
@@ -55,8 +55,8 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
     return videos.filter((video) => new Date(video.publishedAt) >= filterDate)
   }
 
-  // Excel形式でエクスポート
-  const handleExportExcel = async () => {
+  // CSV形式でエクスポート
+  const handleExportCSV = async () => {
     if (!videos.length) return
 
     setIsExporting(true)
@@ -75,7 +75,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
       // ユーザー設定を読み込む
       const userSettings = loadSettings()
       
-      const response = await fetch("/api/export/excel", {
+      const response = await fetch("/api/export/csv", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
       const data = await response.json()
 
       if (!data.success) {
-        toast.error(data.message || "Excelエクスポートに失敗しました")
+        toast.error(data.message || "CSVエクスポートに失敗しました")
         setIsExporting(false)
         return
       }
@@ -101,7 +101,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i)
       }
-      const blob = new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+      const blob = new Blob([bytes], { type: "text/csv" })
 
       // ダウンロードリンクを作成
       const url = window.URL.createObjectURL(blob)
@@ -115,8 +115,8 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
 
       toast.success(`${data.filename} をダウンロードしました`)
     } catch (error) {
-      console.error("Excel export error:", error)
-      toast.error("Excelエクスポート中にエラーが発生しました")
+      console.error("CSV export error:", error)
+      toast.error("CSVエクスポート中にエラーが発生しました")
     } finally {
       setIsExporting(false)
     }
@@ -360,7 +360,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={handleExportExcel}
+              onClick={handleExportCSV}
               disabled={isExporting}
               className="flex items-center gap-1"
             >
@@ -368,8 +368,8 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
                 "処理中..."
               ) : (
                 <>
-                  <FileSpreadsheet className="h-4 w-4" />
-                  <span className="hidden sm:inline">Excel形式で</span>
+                  <FileText className="h-4 w-4" />
+                  <span className="hidden sm:inline">CSV形式で</span>
                   エクスポート
                 </>
               )}

@@ -256,7 +256,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground font-inter">
-              分析したデータをExcel形式で保存できます。
+              分析したデータをCSV形式で保存できます。
               保存したデータを使って、さらに詳しい分析ができます。
             </p>
           </CardContent>
