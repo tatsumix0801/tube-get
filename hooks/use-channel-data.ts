@@ -3,6 +3,8 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { getSpecificVideos } from "@/lib/youtube-api"
 import { getCached, setCache, CacheKeys } from "@/lib/api-cache"
+import { debugLog } from "@/lib/logger"
+import { dedupedFetch } from "@/lib/request-dedup"
 
 // 型定義
 export interface ChannelInfo {
@@ -85,7 +87,7 @@ export function useChannelData(): UseChannelDataResult {
       }
 
       // 全ての動画を取得（ページネーション対応）
-      console.log("[INFO] Fetching videos with API key length:", apiKey.length);
+      debugLog("[INFO] Fetching videos with API key length:", apiKey.length);
       const allVideos = await fetchAllVideos(channelUrl, apiKey)
       
       if (!allVideos.success) {
@@ -116,7 +118,7 @@ export function useChannelData(): UseChannelDataResult {
     const cacheKey = CacheKeys.channelVideos(channelUrl)
     const cachedVideos = getCached<Video[]>(cacheKey)
     if (cachedVideos) {
-      console.log("[INFO] キャッシュから動画を取得:", cachedVideos.length, "件")
+      debugLog("[INFO] キャッシュから動画を取得:", cachedVideos.length, "件")
       toast.success(`キャッシュから${cachedVideos.length}件の動画を取得しました`)
       return { success: true, videos: cachedVideos }
     }
@@ -238,7 +240,7 @@ export function useChannelData(): UseChannelDataResult {
       const missingIds = problemVideoIds.filter(id => !foundIds.has(id));
       
       if (missingIds.length > 0) {
-        console.log("[INFO] 問題の動画を直接取得:", missingIds);
+        debugLog("[INFO] 問題の動画を直接取得:", missingIds);
         try {
           const specificVideos = await getSpecificVideos(missingIds, apiKey);
           if (specificVideos.length > 0) {
@@ -249,7 +251,7 @@ export function useChannelData(): UseChannelDataResult {
             }));
             allVideos.push(...processedSpecificVideos);
             toast.info(`追加で${specificVideos.length}件の動画を取得しました`);
-            console.log("[INFO] 追加取得成功:", specificVideos.map(v => v.id));
+            debugLog("[INFO] 追加取得成功:", specificVideos.map(v => v.id));
           }
         } catch (error) {
           console.error("[ERROR] 特定動画の取得に失敗:", error);
@@ -261,7 +263,7 @@ export function useChannelData(): UseChannelDataResult {
 
       // キャッシュに保存（5分間有効）
       setCache(cacheKey, allVideos)
-      console.log("[INFO] 動画データをキャッシュに保存:", allVideos.length, "件")
+      debugLog("[INFO] 動画データをキャッシュに保存:", allVideos.length, "件")
 
       return {
         success: true,
