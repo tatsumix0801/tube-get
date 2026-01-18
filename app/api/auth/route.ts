@@ -42,6 +42,8 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true, message: "ログイン成功" })
 
     // レスポンスにCookieを設定
+    // 本番環境（HTTPS）ではsecure=true、開発環境ではfalse
+    const isProduction = process.env.NODE_ENV === "production"
     response.cookies.set({
       name: "session_id",
       value: sessionId,
@@ -49,7 +51,7 @@ export async function POST(request: NextRequest) {
       path: "/",
       httpOnly: true,
       sameSite: "lax", // strictからlaxに変更して互換性を向上
-      secure: false, // 開発環境では常にfalseに設定
+      secure: isProduction, // 本番環境ではHTTPS必須
     })
 
     return response
