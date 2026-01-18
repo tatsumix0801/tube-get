@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       if (!channelIdResult.success) {
         return NextResponse.json({ success: false, message: channelIdResult.message }, { status: 400 })
       }
-      resolvedChannelId = channelIdResult.channelId
+      resolvedChannelId = channelIdResult.channelId as string
     }
 
     // チャンネル画像情報を取得（ここでnullではなくstring型であることを確認）

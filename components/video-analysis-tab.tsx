@@ -232,7 +232,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
       console.warn("Direct fetch failed, trying canvas approach:", fetchError);
       // 直接フェッチが失敗した場合、Canvas経由でのアプローチを試みる
       return new Promise((resolve, reject) => {
-        const img = new Image();
+        const img = document.createElement('img');
         img.crossOrigin = "anonymous";
         img.alt = "サムネイル画像";
         img.src = imageUrl;
@@ -350,6 +350,7 @@ export function VideoAnalysisTab({ videos }: VideoAnalysisTabProps) {
                 "処理中..."
               ) : (
                 <>
+                  {/* eslint-disable-next-line jsx-a11y/alt-text */}
                   <Image className="h-4 w-4" />
                   <span className="hidden sm:inline">サムネイル画像</span>
                   <span className="inline sm:hidden">画像</span>

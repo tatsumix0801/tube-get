@@ -13,6 +13,21 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+        pathname: '/vi/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'yt3.ggpht.com',
+        pathname: '/**',
+      },
+    ],
+  },
+  outputFileTracingRoot: '/home/motoki/workspace/20_services/tube-get',
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,

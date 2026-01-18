@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     // チャンネル情報を取得
-    const channelInfoResult = await getChannelInfo(channelIdResult.channelId, apiKey)
+    const channelInfoResult = await getChannelInfo(channelIdResult.channelId as string, apiKey)
 
     if (!channelInfoResult.success) {
       return NextResponse.json({ success: false, message: channelInfoResult.message }, { status: 400 })

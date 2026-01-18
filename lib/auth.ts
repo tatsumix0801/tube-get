@@ -17,13 +17,15 @@ export async function login(password: string) {
   }
 
   try {
+    const cookieStore = await cookies()
+
     // セッションIDを生成（実際の環境ではより安全な方法を使用すべきです）
     const sessionId = Math.random().toString(36).substring(2, 15)
-    const expires = new Date(Date.now() + SESSION_EXPIRY)
+    const expiryDate = new Date(Date.now() + SESSION_EXPIRY)
 
     // セッションCookieを設定
-    cookies().set("session_id", sessionId, {
-      expires,
+    cookieStore.set("session_id", sessionId, {
+      expires: expiryDate,
       httpOnly: true,
       path: "/",
       secure: process.env.NODE_ENV === "production",
@@ -39,7 +41,7 @@ export async function login(password: string) {
 
 export async function logout() {
   try {
-    cookies().delete("session_id")
+    (await cookies()).delete("session_id")
   } catch (error) {
     console.error("Logout error:", error)
   }
@@ -48,7 +50,7 @@ export async function logout() {
 
 export async function checkAuth() {
   try {
-    const sessionId = cookies().get("session_id")
+    const sessionId = (await cookies()).get("session_id")
     return !!sessionId
   } catch (error) {
     console.error("Auth check error:", error)
